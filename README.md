@@ -180,3 +180,8 @@ Items containing "Priming Wipe" are automatically excluded from printing.
 - Check that product names follow the expected format
 - Verify the item isn't being filtered (like "Priming Wipe")
 - Review console output for skipped items
+
+To-do Notes:
+- All countries currently mapped to Australia
+- "Custom number" & "Custom text"
+- Still more assets to map
