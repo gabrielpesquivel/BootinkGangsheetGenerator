@@ -5,7 +5,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_DIR = os.path.join(BASE_DIR, 'input_csv')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'output_sheet')
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
-FONT_PATH = os.path.join(ASSETS_DIR, 'Industry_Ultra.ttf')
+FONT_PATH = os.path.join(ASSETS_DIR, 'fonts', 'Industry_Ultra.ttf')
+FLAGS_DIR = os.path.join(ASSETS_DIR, 'flags')
 
 # Page Specs (A4 in points)
 MM_TO_PTS = 2.83465
