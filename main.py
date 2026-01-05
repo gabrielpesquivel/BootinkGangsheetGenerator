@@ -89,121 +89,142 @@ def determine_size_category(text):
     # Everything else (dates, words over 3 characters)
     return 'Words'
 
+
+def collect_items_from_csv(df):
+    """
+    First pass: collect all items from the CSV with their dimensions and render data.
+
+    Returns:
+        List of item dicts with 'width', 'height', 'type', and type-specific data
+    """
+    items = []
+
+    for index, row in df.iterrows():
+        lineitem_name = str(row.get('Lineitem name', ''))
+
+        # Skip items we don't want to print
+        if not lineitem_name or lineitem_name.strip() == '' or 'Priming Wipe' in lineitem_name:
+            continue
+
+        qty = int(row.get('Lineitem quantity', 1))
+
+        # Check if this is a flag item
+        flag_path = get_flag_path(lineitem_name)
+        if flag_path:
+            flag_height_pts = config.SIZE_MAP['Flags']['target_height_mm'] * config.MM_TO_PTS
+
+            for _ in range(qty):
+                items.append({
+                    'type': 'flag',
+                    'width': config.GRID_SIZE,
+                    'height': config.GRID_SIZE,
+                    'flag_path': flag_path,
+                    'flag_height_pts': flag_height_pts
+                })
+            continue
+
+        # Extract text
+        if ' - ' in lineitem_name:
+            text = lineitem_name.split(' - ', 1)[1]
+            if ' / ' in text:
+                text = text.split(' / ')[0]
+        else:
+            text = lineitem_name
+
+        if not text or text.strip() == '':
+            continue
+
+        # Determine size and geometry
+        size = determine_size_category(text)
+        size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
+        grid_squares = determine_grid_squares(text)
+        rect_width = grid_squares * config.GRID_SIZE
+        rect_height = config.GRID_SIZE
+
+        text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+            text, config.FONT_PATH, size_cfg, rect_width, rect_height
+        )
+
+        for _ in range(qty):
+            items.append({
+                'type': 'sticker',
+                'width': w,
+                'height': h,
+                'text_geo': text_geo,
+                'bg_geo': bg_geo
+            })
+
+    return items
+
+
+def render_item(c, x, y, item):
+    """Render a single item at the given position."""
+    w, h = item['width'], item['height']
+
+    # Draw magenta cutting rectangle
+    pdf_utils.draw_cutting_rectangle(c, x, y, w, h)
+
+    if item['type'] == 'flag':
+        # Get flag dimensions for centering
+        svg_w, svg_h = pdf_utils.get_svg_dimensions(item['flag_path'], item['flag_height_pts'])
+        center_x = x + (w - svg_w) / 2
+        center_y = y + (h - svg_h) / 2
+        pdf_utils.draw_svg(c, item['flag_path'], center_x, center_y, item['flag_height_pts'])
+
+    elif item['type'] == 'sticker':
+        # Translate geometry to position
+        final_text = affinity.translate(item['text_geo'], xoff=x, yoff=y)
+        final_bg = affinity.translate(item['bg_geo'], xoff=x, yoff=y)
+
+        # Draw background (white 3% opacity)
+        pdf_utils.draw_shapely_poly(c, final_bg, CMYKColor(0, 0, 0, 0), alpha=0.03)
+        # Draw text (black)
+        pdf_utils.draw_shapely_poly(c, final_text, CMYKColor(0, 0.09, 0.09, 0.87), alpha=1.0)
+
+
 def process_orders():
     # 1. Find CSV files
     input_files = [f for f in os.listdir(config.INPUT_DIR) if f.endswith('.csv')]
-    
+
     if not input_files:
         print("No CSV files found in input_csv/")
         return
 
     for csv_file in input_files:
         print(f"Processing {csv_file}...")
-        
+
         # Setup paths
         input_path = os.path.join(config.INPUT_DIR, csv_file)
         output_filename = csv_file.replace('.csv', '_gangsheet.pdf')
         output_path = os.path.join(config.OUTPUT_DIR, output_filename)
-        
+
         # Load Data
         df = pd.read_csv(input_path)
-        
+
         # Setup PDF
         c = pdf_utils.setup_canvas(output_path, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
-        layout_mgr = layout.LayoutManager(c)
 
-        # Process Rows
-        for index, row in df.iterrows():
-            # Parse the lineitem name (format: "Category - TEXT / COLOR")
-            lineitem_name = str(row.get('Lineitem name', ''))
+        # Phase 1: Collect all items
+        items = collect_items_from_csv(df)
+        print(f"  Collected {len(items)} items")
 
-            # Skip items we don't want to print (like Priming Wipe)
-            if not lineitem_name or lineitem_name.strip() == '' or 'Priming Wipe' in lineitem_name:
-                continue
+        # Count by size for stats
+        small_count = sum(1 for i in items if i['width'] <= config.GRID_SIZE + 0.1)
+        large_count = len(items) - small_count
+        print(f"  Small items (1 square): {small_count}, Large items (2-3 squares): {large_count}")
 
-            qty = int(row.get('Lineitem quantity', 1))
+        # Phase 2: Optimized layout
+        layout_mgr = layout.OptimizedLayoutManager(c)
+        placed_items = layout_mgr.place_items(items)
 
-            # Check if this is a flag item
-            flag_path = get_flag_path(lineitem_name)
-            if flag_path:
-                # Handle flag items - render SVG at 6mm height
-                flag_height_pts = config.SIZE_MAP['Flags']['target_height_mm'] * config.MM_TO_PTS
-
-                # Add to sheet for each quantity
-                for _ in range(qty):
-                    # Use 1 grid square for flags (25mm width)
-                    w = config.GRID_SIZE
-                    h = config.GRID_SIZE
-
-                    # Get Position
-                    x, y = layout_mgr.add_item(w, h)
-
-                    # Draw magenta cutting rectangle
-                    pdf_utils.draw_cutting_rectangle(c, x, y, w, h)
-
-                    # Get flag dimensions to calculate centered position
-                    svg_w, svg_h = pdf_utils.get_svg_dimensions(flag_path, flag_height_pts)
-
-                    # Calculate centered position within the grid square
-                    center_x = x + (w - svg_w) / 2
-                    center_y = y + (h - svg_h) / 2
-
-                    # Draw the flag SVG centered in the cell
-                    pdf_utils.draw_svg(c, flag_path, center_x, center_y, flag_height_pts)
-
-                continue  # Skip the text rendering below
-
-            # Extract the text part (between the dash and slash, or the whole name if no slash)
-            if ' - ' in lineitem_name:
-                text = lineitem_name.split(' - ', 1)[1]  # Get everything after first " - "
-                if ' / ' in text:
-                    text = text.split(' / ')[0]  # Get everything before " / "
-            else:
-                text = lineitem_name
-
-            # Skip empty text
-            if not text or text.strip() == '':
-                continue
-
-            # Determine size category based on text content
-            size = determine_size_category(text)
-
-            # Get Config for this size
-            size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
-
-            # Determine rectangle dimensions based on character count
-            grid_squares = determine_grid_squares(text)
-            rect_width = grid_squares * config.GRID_SIZE
-            rect_height = config.GRID_SIZE  # Height is always 1 grid square (25mm)
-
-            # Generate Geometry (Once per unique design)
-            # Text will be centered within the rectangle
-            text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
-                text, config.FONT_PATH, size_cfg, rect_width, rect_height
-            )
-
-            # Add to Sheet (Repeat for Quantity)
-            for _ in range(qty):
-                # Get Position
-                x, y = layout_mgr.add_item(w, h)
-
-                # Draw magenta cutting rectangle
-                pdf_utils.draw_cutting_rectangle(c, x, y, w, h)
-
-                # Move Geometry to Position
-                final_text = affinity.translate(text_geo, xoff=x, yoff=y)
-                final_bg = affinity.translate(bg_geo, xoff=x, yoff=y)
-
-                # Draw Background (White 3% opacity) - 0.5mm offset outline for peeling bubble
-                # CMYK(0,0,0,0) is white (#ffffff)
-                pdf_utils.draw_shapely_poly(c, final_bg, CMYKColor(0,0,0,0), alpha=0.03)
-
-                # Draw Text (Black #221f1f - RGB(34,31,31) = CMYK(0,0.09,0.09,0.87))
-                pdf_utils.draw_shapely_poly(c, final_text, CMYKColor(0, 0.09, 0.09, 0.87), alpha=1.0)
+        # Phase 3: Render all items
+        for x, y, item in placed_items:
+            render_item(c, x, y, item)
 
         # Save PDF
         c.save()
-        print(f"Saved: {output_path}")
+        print(f"  Pages: {layout_mgr.page_count}")
+        print(f"  Saved: {output_path}")
 
 if __name__ == "__main__":    
     if not os.path.exists(config.FONT_PATH):
