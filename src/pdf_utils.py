@@ -1,5 +1,28 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import CMYKColor, magenta
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF
+
+def get_svg_dimensions(svg_path, target_height_pts):
+    """
+    Get the dimensions of an SVG when scaled to a target height.
+
+    Args:
+        svg_path: Path to the SVG file
+        target_height_pts: Target height in points
+
+    Returns:
+        (width, height) of the scaled SVG in points
+    """
+    drawing = svg2rlg(svg_path)
+    if drawing is None:
+        return 0, 0
+
+    original_height = drawing.height
+    original_width = drawing.width
+    scale = target_height_pts / original_height
+
+    return original_width * scale, original_height * scale
 
 def setup_canvas(output_path, page_size):
     c = canvas.Canvas(output_path, pagesize=page_size)
@@ -21,6 +44,40 @@ def draw_cutting_rectangle(c, x, y, width, height):
     c.setLineWidth(0.5)  # Thin line (0.5 points)
     c.rect(x, y, width, height, fill=0, stroke=1)
     c.restoreState()
+
+def draw_svg(c, svg_path, x, y, target_height_pts):
+    """
+    Draws an SVG file onto the ReportLab canvas at specified position.
+
+    Args:
+        c: ReportLab canvas
+        svg_path: Path to the SVG file
+        x: X position (bottom-left) in points
+        y: Y position (bottom-left) in points
+        target_height_pts: Target height in points (will scale proportionally)
+
+    Returns:
+        (width, height) of the rendered SVG in points
+    """
+    drawing = svg2rlg(svg_path)
+    if drawing is None:
+        return 0, 0
+
+    # Calculate scale factor to achieve target height
+    original_height = drawing.height
+    original_width = drawing.width
+    scale = target_height_pts / original_height
+
+    # Scale the drawing
+    drawing.width = original_width * scale
+    drawing.height = original_height * scale
+    drawing.scale(scale, scale)
+
+    # Render onto canvas
+    renderPDF.draw(drawing, c, x, y)
+
+    return drawing.width, drawing.height
+
 
 def draw_shapely_poly(c, poly, color, alpha=1.0):
     """Draws a Shapely polygon onto the ReportLab canvas."""
