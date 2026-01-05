@@ -1,2 +1,3 @@
-input_csv/example1.csv
-output_sheet/example1_gangsheet.pdf
+input_csv/
+output_sheet/
+src/__pycache__
