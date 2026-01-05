@@ -3,3 +3,4 @@ reportlab
 shapely
 matplotlib
 numpy
+svglib
