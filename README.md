@@ -1,187 +1,193 @@
-# Gangsheet Generator
+# Gang Sheet Generator
 
-Automated gangsheet generation tool for Shopify store owners selling custom stickers, decals, and printed products.
+Automated gang sheet generation tool for Shopify store owners selling custom stickers, decals, and printed products.
 
-## What It Does
+## Quick Start (Desktop App)
 
-This tool automatically converts Shopify order exports into print-ready PDF gangsheets, eliminating hours of manual layout work. Simply export your orders from Shopify, run the script, and get optimised print sheets ready for production.
-
-## How It Benefits Shopify Store Owners
-
-### Time Savings
-- **From Hours to Seconds**: What used to take 2-3 hours of manual design work now takes seconds
-- **Batch Processing**: Process multiple order files at once
-- **Zero Manual Layout**: No more copying, pasting, and arranging designs in Photoshop or Illustrator
-
-### Error Reduction
-- **Automated Parsing**: Directly reads Shopify CSV exports - no manual data entry
-- **Accurate Quantities**: Automatically repeats designs based on order quantities
-- **Smart Filtering**: Excludes non-printable items (like "Priming Wipe") automatically
-
-### Production Efficiency
-- **Optimized Layouts**: Smart packing algorithm maximises sheet usage
-- **Multi-Page Support**: Automatically creates new pages when sheets fill up
-- **Print-Ready Output**: High-quality PDF output ready for DTF, sublimation, or vinyl printing
-
-### Cost Savings
-- **Material Optimization**: Efficient packing reduces wasted material
-- **Labor Reduction**: Eliminates manual pre-press work
-- **Faster Turnaround**: Ship orders faster with automated production prep
+1. **Run** `dist\GangSheetGenerator.exe`
+2. **Drag & drop** your Shopify CSV files into the window
+3. **Done!** PDFs appear in `output_sheet/` folder next to the exe
 
 ## Features
 
-- **Automatic CSV Processing**: Reads Shopify order exports directly
-- **Smart Text Extraction**: Parses product names to extract custom text and designs
-- **Configurable Sizes**: Support for Small, Medium, and Large product variations
-- **Intelligent Layout**: Bin-packing algorithm optimizes sheet usage
-- **Professional Output**: A4 PDF sheets with proper margins and spacing
-- **Vector Text Rendering**: Clean, scalable text output with background offsets
-- **Batch Processing**: Process multiple order files in one run                                                               
+- **Drag & Drop GUI**: Modern dark-themed interface - just drag CSV files in
+- **178 Country Flags**: Full flag support across all regions
+- **Smart Layout**: Bin-packing algorithm maximizes sheet usage
+- **Multi-Page Support**: Automatically creates new pages when sheets fill up
+- **Print-Ready Output**: A4 PDF sheets ready for DTF, sublimation, or vinyl printing
+- **Fully Portable**: Single .exe file contains everything
 
-### Usage
+## Installation
 
-1. **Export Orders from Shopify**:
-   - Go to Shopify Admin > Orders
-   - Select the orders you want to fulfill
-   - Export as CSV
+### Option 1: Use Pre-built Executable (Recommended)
 
-2. **Place CSV in Input Folder**:
-   - Copy your Shopify CSV export to the `input_csv` folder
-   - You can process multiple CSV files at once
+1. Download `GangSheetGenerator.exe` from the `dist/` folder
+2. Double-click to run
+3. If Windows SmartScreen appears, click "More info" → "Run anyway"
 
-3. **Run the Generator**:
+### Option 2: Run from Source
+
 ```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run GUI
+python gui.py
+
+# Or run command-line version (place CSVs in input_csv/ first)
 python main.py
 ```
 
-4. **Get Your Gangsheets**:
-   - Find your print-ready PDFs in the `output_sheet` folder
-   - Each file will be named `[original_filename]_gangsheet.pdf`
+### Option 3: Build Executable Yourself
 
-## Example Workflow
+```bash
+pip install -r requirements.txt
+python -m PyInstaller build_exe.spec --noconfirm
+```
 
+The executable will be created at `dist/GangSheetGenerator.exe`
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `python gui.py` | Launch the GUI application |
+| `python main.py` | Run command-line version (reads from `input_csv/`) |
+| `python -m PyInstaller build_exe.spec --noconfirm` | Build the executable |
+| `powershell -ExecutionPolicy Bypass -File create_shortcut.ps1` | Create desktop shortcut |
+
+## Create Desktop Shortcut
+
+```powershell
+# PowerShell
+powershell -ExecutionPolicy Bypass -File create_shortcut.ps1
+
+# Or double-click
+create_shortcut.bat
 ```
-Shopify Orders (orders.csv)
-         ↓
-input_csv/orders.csv
-         ↓
-    python main.py
-         ↓
-output_sheet/orders_gangsheet.pdf
-         ↓
-    Send to Printer
+
+Or manually: Right-click `GangSheetGenerator.exe` → Send to → Desktop
+
+## Usage
+
+### GUI Application
+1. Launch `GangSheetGenerator.exe` or run `python gui.py`
+2. Drag & drop CSV files into the window (or click to browse)
+3. Wait for "Ready!" message
+4. Click "Open Output Folder" to view PDFs
+
+### Command Line
+```bash
+# Place CSVs in input_csv/ folder
+python main.py
+# PDFs appear in output_sheet/ folder
 ```
+
+## Shopify CSV Format
+
+Export orders from Shopify Admin → Orders → Export
+
+The tool reads these columns:
+- `Lineitem name`: Product name (format: `Region - COUNTRY` or `Category - TEXT / COLOR`)
+- `Lineitem quantity`: Number of items
+
+Examples:
+| Lineitem name | Output |
+|---------------|--------|
+| `Europe - WALES` | Wales flag |
+| `Asia - JAPAN / BLACK` | Japan flag |
+| `Family - SMITH` | Text "SMITH" |
+| `Numbers - 23 / BLACK` | Text "23" |
+
+Items containing "Priming Wipe" are automatically excluded.
+
+## Supported Flags (178 total)
+
+| Region | Countries |
+|--------|-----------|
+| **Europe** (48) | Albania, Austria, Belgium, Bosnia, Croatia, Denmark, England, France, Germany, Greece, Hungary, Italy, Netherlands, Norway, Poland, Portugal, Scotland, Serbia, Slovenia, Spain, Sweden, Switzerland, Ukraine, Wales, + more |
+| **Asia** (28) | Bangladesh, Cambodia, China, India, Indonesia, Japan, Malaysia, Pakistan, Philippines, Singapore, South Korea, Thailand, Vietnam, + more |
+| **Africa** (36) | Egypt, Ethiopia, Ghana, Kenya, Morocco, Nigeria, South Africa, + more |
+| **Americas** (41) | Argentina, Brazil, Canada, Chile, Colombia, Cuba, Jamaica, Mexico, Peru, USA, + more |
+| **Oceania** (9) | Australia, Fiji, New Zealand, Papua New Guinea, Samoa, + more |
+| **Middle East** (16) | Iran, Iraq, Israel, Jordan, Kuwait, Lebanon, Qatar, Saudi Arabia, UAE, + more |
 
 ## Project Structure
 
 ```
-BootinkProject/
-├── main.py                 # Main entry point
-├── requirements.txt        # Python dependencies
-├── input_csv/              # Place your Shopify CSV exports here
-│   └── example1.csv
-├── output_sheet/           # Generated PDF gangsheets appear here
-│   └── example1_gangsheet.pdf
-├── assets/                 # Font files
-│   └── Arial_Bold.ttf
-└── src/
-    ├── config.py          # Configuration (page size, margins, product sizes)
-    ├── pdf_utils.py       # PDF generation utilities
-    ├── layout.py          # Smart layout manager
-    └── geometry.py        # Text-to-shape conversion
+ShopifyOrdersPipeline/
+├── dist/                    # Built executable
+│   └── GangSheetGenerator.exe
+├── assets/
+│   ├── fonts/              # Font files
+│   │   └── Industry_Ultra.ttf
+│   └── flags/              # Flag SVGs by region
+│       ├── africa/
+│       ├── asia/
+│       ├── caribbean/
+│       ├── central_america/
+│       ├── europe/
+│       ├── middle_east/
+│       ├── north_america/
+│       ├── oceania/
+│       └── south_america/
+├── src/
+│   ├── config.py           # Page size, margins, sizing
+│   ├── geometry.py         # Text-to-shape conversion
+│   ├── layout.py           # Smart layout manager
+│   └── pdf_utils.py        # PDF generation
+├── gui.py                  # GUI application
+├── main.py                 # Core processing / CLI
+├── build_exe.spec          # PyInstaller config
+├── create_shortcut.ps1     # Desktop shortcut script
+├── create_shortcut.bat     # Shortcut script launcher
+└── requirements.txt        # Python dependencies
 ```
-
-## How It Works
-
-### 1. CSV Parsing (main.py:24-50)
-The tool reads Shopify order exports and extracts:
-- Product names (lineitem name)
-- Quantities (lineitem quantity)
-- Custom text from product names (format: "Category - TEXT / COLOR")
-
-### 2. Geometry Generation (geometry.py:94-117)
-For each unique design:
-- Converts text to vector paths using matplotlib
-- Creates background offset for sticker borders
-- Handles complex characters with holes (like O, P, A, etc.)
-- Normalizes sizing for consistent output
-
-### 3. Smart Layout (layout.py:11-42)
-The layout manager:
-- Uses bin-packing algorithm to fit designs efficiently
-- Maintains proper margins (10mm) and gaps (5mm)
-- Creates new pages automatically when full
-- Tracks cursor position for optimal placement
-
-### 4. PDF Generation (pdf_utils.py)
-Outputs production-ready PDFs with:
-- A4 page size (210x297mm)
-- CMYK color space for print accuracy
-- Vector shapes for crisp output at any scale
-- Transparency support for layered designs
 
 ## Configuration
 
 Edit `src/config.py` to customize:
 
-### Page Settings
 ```python
-PAGE_WIDTH = 210 * MM_TO_PTS   # A4 width
-PAGE_HEIGHT = 297 * MM_TO_PTS  # A4 height
-MARGIN = 10 * MM_TO_PTS        # 10mm margins
-GAP = 5 * MM_TO_PTS            # 5mm gap between stickers
-```
+# Page Settings (A4)
+PAGE_WIDTH = 210 * MM_TO_PTS
+PAGE_HEIGHT = 297 * MM_TO_PTS
+MARGIN = 10 * MM_TO_PTS
+GRID_SIZE = 25 * MM_TO_PTS
 
-### Product Sizes
-```python
+# Asset Sizes (heights in mm)
 SIZE_MAP = {
-    'Small': {'font_size': 30, 'offset_mm': 1.5},
-    'Medium': {'font_size': 50, 'offset_mm': 2.0},
-    'Large': {'font_size': 80, 'offset_mm': 3.0}
+    'Words': {'target_height_mm': 4},      # Dates + Words over 3 chars
+    'Initials': {'target_height_mm': 5},   # Initials + Numbers
+    'Flags': {'target_height_mm': 6},      # Country flags
+    'Symbols': {'target_height_mm': 10}    # Symbols
 }
 ```
 
-### Font
-Replace `assets/Arial_Bold.ttf` with any TrueType font you prefer.
-
-## Shopify CSV Format
-
-The tool expects Shopify's standard order export format with these columns:
-- `Lineitem name`: Product name (format: "Category - TEXT / COLOR")
-- `Lineitem quantity`: Number of items ordered
-
-Example line items:
-- `Europe - WALES` → Prints "WALES"
-- `Family - CUSTOM TEXT / BLACK` → Prints "CUSTOM TEXT"
-- `Numbers - 2 / BLACK` → Prints "2"
-
-Items containing "Priming Wipe" are automatically excluded from printing.
-
 ## Requirements
 
-- Python 3.7+
-- pandas: CSV processing
-- reportlab: PDF generation
-- shapely: Geometric operations
-- matplotlib: Text-to-path conversion
-- numpy: Numerical operations
+- Python 3.8+
+- pandas
+- reportlab
+- shapely
+- matplotlib
+- numpy
+- svglib
+- customtkinter (for GUI)
+- tkinterdnd2 (for drag-drop)
 
 ## Troubleshooting
 
-### "No CSV files found"
-- Ensure CSV files are in the `input_csv` folder
-- Check that files have `.csv` extension
+### Windows SmartScreen blocks the app
+Click "More info" → "Run anyway" (only needed once)
 
-### "Font not found"
-- Verify `Arial_Bold.ttf` exists in the `assets` folder
-- Update `FONT_PATH` in config.py if using a different font
+### "Flag file not found" warning
+The country name in the CSV doesn't match any flag file. Check spelling matches the files in `assets/flags/`.
 
-### Items Not Appearing
-- Check that product names follow the expected format
-- Verify the item isn't being filtered (like "Priming Wipe")
-- Review console output for skipped items
+### GUI won't start
+Try running from source: `python gui.py`
 
-To-do Notes:
-- All countries currently mapped to Australia
-- "Custom number" & "Custom text"
-- Still more assets to map
+### No output generated
+- Check CSV files are valid Shopify exports
+- Look for error messages in the status area
+- Ensure the CSV has `Lineitem name` and `Lineitem quantity` columns
