@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 30.61 18.09">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ffc316;
+        stroke: #fff;
+      }
+
+      .cls-1, .cls-2 {
+        stroke-miterlimit: 40;
+        stroke-width: 1.13px;
+      }
+
+      .cls-3 {
+        fill: none;
+      }
+
+      .cls-4 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-2 {
+        fill: #be202e;
+        stroke: #010101;
+      }
+
+      .cls-6 {
+        fill: #2a946b;
+      }
+    </style>
+    <clipPath id="clippath">
+      <polygon class="cls-3" points=".29 .54 28.64 9.05 .29 17.55 .29 .54"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <polygon class="cls-3" points=".29 .54 14.46 9.05 .29 17.55 .29 .54"/>
+    </clipPath>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-6" d="M.29.54h28.35v17.01H.29V.54Z"/>
+      <g class="cls-5">
+        <path class="cls-1" d="M.29.54l28.35,8.5L.29,17.55"/>
+      </g>
+      <g class="cls-4">
+        <path class="cls-2" d="M.29.54l14.17,8.5L.29,17.55"/>
+      </g>
+    </g>
+  </g>
+</svg>

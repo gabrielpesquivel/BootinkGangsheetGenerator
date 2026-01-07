@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.01 17.01">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #293789;
+      }
+
+      .cls-3 {
+        fill: #fecc08;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-2" y="0" width="34.01" height="17.01"/>
+      <path class="cls-3" d="M9.01,0h17.01v17.01L9.01,0Z"/>
+      <g id="g">
+        <polyline class="cls-1" points="5.37 0 5 1.12 5.95 .43 6.9 1.12 6.54 0"/>
+        <path id="s" class="cls-1" d="M7.13,3.24l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+        <path id="s-2" data-name="s" class="cls-1" d="M9.25,5.37l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+      </g>
+      <g id="g-2" data-name="g">
+        <path id="s-3" data-name="s" class="cls-1" d="M11.38,7.49l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+        <path id="s-4" data-name="s" class="cls-1" d="M13.51,9.62l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+        <path id="s-5" data-name="s" class="cls-1" d="M15.63,11.75l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+      </g>
+      <g id="g-3" data-name="g">
+        <path id="s-6" data-name="s" class="cls-1" d="M17.76,13.87l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+        <path id="s-7" data-name="s" class="cls-1" d="M19.88,16l.95-2.92.95,2.92-2.49-1.81h3.07l-2.49,1.81Z"/>
+        <polyline class="cls-1" points="23.55 17.01 24.5 16.32 23.32 16.32 22.96 15.2 22.6 16.32 21.42 16.32 22.37 17.01"/>
+      </g>
+    </g>
+  </g>
+</svg>

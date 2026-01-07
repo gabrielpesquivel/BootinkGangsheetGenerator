@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.02 17.01">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ce2028;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        fill: #263779;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g id="SAMOA">
+      <path class="cls-1" d="M0,0h34.02v17.01H0V0Z"/>
+      <path class="cls-3" d="M0,0h17.01v8.5H0V0Z"/>
+      <path id="a" class="cls-2" d="M8.5,5.9l.73,2.25-1.91-1.39h2.36l-1.91,1.39.73-2.25Z"/>
+      <path id="b" class="cls-2" d="M5.91,2.48l.58,1.8-1.53-1.11h1.89l-1.53,1.11.58-1.8Z"/>
+      <path id="b-2" data-name="b" class="cls-2" d="M8.5.35l.58,1.8-1.53-1.11h1.89l-1.53,1.11.58-1.8Z"/>
+      <path id="b-3" data-name="b" class="cls-2" d="M11.16,2.13l.55,1.68-1.43-1.04h1.77l-1.43,1.04.55-1.68Z"/>
+      <path id="a-2" data-name="a" class="cls-2" d="M9.8,4.31l.36,1.12-.96-.69h1.18l-.96.69.36-1.12Z"/>
+    </g>
+  </g>
+</svg>

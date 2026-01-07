@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.35 17.01">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ce2028;
+      }
+
+      .cls-2 {
+        fill: #077b5f;
+      }
+
+      .cls-3 {
+        fill: #fbd118;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-1" d="M0,0h28.35v17.01H0V0Z"/>
+      <path class="cls-2" d="M2.38,2.38h23.58v12.25H2.38V2.38Z"/>
+      <path class="cls-3" d="M2.38,2.38h23.58L2.38,14.63h23.58L2.38,2.38Z"/>
+      <circle class="cls-1" cx="14.17" cy="8.5" r="2.04"/>
+      <path class="cls-1" d="M3.85,8.51c.24.48.72,1.01,1.15,1.21.02-.48-.13-1.11-.35-1.61l-.8.4Z"/>
+      <path class="cls-3" d="M3.42,6.89c.36.78-.99,2.6,1.22,3.06-.27-.38-.42-1.01-.34-1.5.46.2.92.65,1.1,1.08.76-2.13-1.5-1.92-1.97-2.64Z"/>
+      <path id="a" class="cls-3" d="M8.5,14.71l-.65,2,1.7-1.24h-2.1l1.7,1.24-.65-2Z"/>
+      <path id="a-2" data-name="a" class="cls-3" d="M14.17,14.71l-.65,2,1.7-1.24h-2.1l1.7,1.24-.65-2Z"/>
+      <path id="a-3" data-name="a" class="cls-3" d="M19.84,14.71l-.65,2,1.7-1.24h-2.1l1.7,1.24-.65-2Z"/>
+      <path id="a-4" data-name="a" class="cls-3" d="M19.84.09l-.65,2,1.7-1.24h-2.1l1.7,1.24-.65-2Z"/>
+      <path id="a-5" data-name="a" class="cls-3" d="M14.17.09l-.65,2,1.7-1.24h-2.1l1.7,1.24-.65-2Z"/>
+      <path id="a-6" data-name="a" class="cls-3" d="M8.5.09l-.65,2,1.7-1.24h-2.1l1.7,1.24-.65-2Z"/>
+      <path class="cls-3" d="M14.17,6.63l-1.1,3.38,2.88-2.09h-3.56l2.88,2.09-1.1-3.38Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25.51 17.01">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #089e49;
+      }
+
+      .cls-2 {
+        fill: #ee302f;
+      }
+
+      .cls-3 {
+        fill: #fbd118;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-1" width="25.51" height="17.01"/>
+      <rect class="cls-2" width="25.51" height="8.5"/>
+      <g>
+        <g id="c">
+          <path id="t" class="cls-3" d="M12.76,5.67l-.88,2.7,1.35.44"/>
+          <path id="t-2" data-name="t" class="cls-3" d="M12.76,5.67l.88,2.7-1.35.44"/>
+        </g>
+        <g id="c-2" data-name="c">
+          <path id="t-3" data-name="t" class="cls-3" d="M15.45,7.63h-2.83v1.42"/>
+          <path id="t-4" data-name="t" class="cls-3" d="M15.45,7.63l-2.29,1.67-.83-1.15"/>
+        </g>
+        <g id="c-3" data-name="c">
+          <path id="t-5" data-name="t" class="cls-3" d="M14.42,10.8l-.88-2.7-1.35.44"/>
+          <path id="t-6" data-name="t" class="cls-3" d="M14.42,10.8l-2.29-1.67.83-1.15"/>
+        </g>
+        <g id="c-4" data-name="c">
+          <path id="t-7" data-name="t" class="cls-3" d="M11.09,10.8l2.29-1.67-.83-1.15"/>
+          <path id="t-8" data-name="t" class="cls-3" d="M11.09,10.8l.88-2.7,1.35.44"/>
+        </g>
+        <g id="c-5" data-name="c">
+          <path id="t-9" data-name="t" class="cls-3" d="M10.06,7.63l2.29,1.67.83-1.15"/>
+          <path id="t-10" data-name="t" class="cls-3" d="M10.06,7.63h2.83v1.42"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
