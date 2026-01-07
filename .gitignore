@@ -1,4 +1,16 @@
+# Data folders
 input_csv/
 output_sheet/
-src/__pycache__
-__pycache__
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# PyInstaller build artifacts
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/

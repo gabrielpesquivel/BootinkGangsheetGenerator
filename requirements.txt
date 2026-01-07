@@ -4,3 +4,6 @@ shapely
 matplotlib
 numpy
 svglib
+customtkinter
+tkinterdnd2
+pyinstaller
