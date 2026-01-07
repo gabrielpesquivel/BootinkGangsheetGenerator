@@ -9,16 +9,24 @@ import re
 # Regions that indicate a flag item
 FLAG_REGIONS = ['Europe', 'Asia', 'Americas', 'Africa', 'Oceania']
 
-# Map country names to flag file names (lowercase, .svg extension)
-# For testing: map countries to 'australia' since that's the only flag available
-FLAG_FILE_MAP = {
-    'australia': 'australia',
-    'wales': 'australia',      # Mapped to Australia for testing
-    'bosnia': 'australia',     # Mapped to Australia for testing
-    'pakistan': 'australia',   # Mapped to Australia for testing
-    'slovenia': 'australia',   # Mapped to Australia for testing
-    'portugal': 'australia',   # Mapped to Australia for testing
-}
+# Build a lookup of all available flags (lowercase country name -> full path)
+def _build_flag_lookup():
+    """Scan all flag subdirectories and build a lookup map."""
+    lookup = {}
+    if not os.path.exists(config.FLAGS_DIR):
+        return lookup
+
+    for subdir in os.listdir(config.FLAGS_DIR):
+        subdir_path = os.path.join(config.FLAGS_DIR, subdir)
+        if os.path.isdir(subdir_path):
+            for filename in os.listdir(subdir_path):
+                if filename.endswith('.svg'):
+                    # Extract country name (without .svg), store as lowercase key
+                    country_name = filename[:-4].lower()
+                    lookup[country_name] = os.path.join(subdir_path, filename)
+    return lookup
+
+FLAG_LOOKUP = _build_flag_lookup()
 
 def get_flag_path(lineitem_name):
     """
@@ -39,14 +47,13 @@ def get_flag_path(lineitem_name):
             if ' / ' in country:
                 country = country.split(' / ')[0].strip()
 
-            # Look up the flag file
-            flag_file = FLAG_FILE_MAP.get(country, country)
-            flag_path = os.path.join(config.FLAGS_DIR, f'{flag_file}.svg')
+            # Look up the flag file from our scanned lookup
+            flag_path = FLAG_LOOKUP.get(country)
 
-            if os.path.exists(flag_path):
+            if flag_path and os.path.exists(flag_path):
                 return flag_path
             else:
-                print(f"Warning: Flag file not found for '{country}': {flag_path}")
+                print(f"Warning: Flag file not found for '{country}'")
                 return None
     return None
 
