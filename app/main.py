@@ -130,11 +130,17 @@ def collect_items_from_csv(df):
                 })
             continue
 
-        # Extract text
+        # Extract text and color
+        text_color = 'BLACK'  # Default
         if ' - ' in lineitem_name:
             text = lineitem_name.split(' - ', 1)[1]
             if ' / ' in text:
-                text = text.split(' / ')[0]
+                parts = text.split(' / ')
+                text = parts[0]
+                if len(parts) > 1:
+                    color_part = parts[1].strip().upper()
+                    if color_part in ('BLACK', 'WHITE'):
+                        text_color = color_part
         else:
             text = lineitem_name
 
@@ -158,7 +164,8 @@ def collect_items_from_csv(df):
                 'width': w,
                 'height': h,
                 'text_geo': text_geo,
-                'bg_geo': bg_geo
+                'bg_geo': bg_geo,
+                'text_color': text_color
             })
 
     return items
@@ -183,10 +190,21 @@ def render_item(c, x, y, item):
         final_text = affinity.translate(item['text_geo'], xoff=x, yoff=y)
         final_bg = affinity.translate(item['bg_geo'], xoff=x, yoff=y)
 
-        # Draw background (white 3% opacity)
-        pdf_utils.draw_shapely_poly(c, final_bg, CMYKColor(0, 0, 0, 0), alpha=0.03)
-        # Draw text (black)
-        pdf_utils.draw_shapely_poly(c, final_text, CMYKColor(0, 0.09, 0.09, 0.87), alpha=1.0)
+        # Determine colors based on text color
+        text_color = item.get('text_color', 'BLACK')
+        if text_color == 'WHITE':
+            # White text with black bubble fill at 3%
+            text_cmyk = CMYKColor(0, 0, 0, 0)  # White
+            bubble_cmyk = CMYKColor(0, 0, 0, 1)  # Black
+        else:
+            # Black text with white bubble fill at 3%
+            text_cmyk = CMYKColor(0, 0, 0, 1)  # Black
+            bubble_cmyk = CMYKColor(0, 0, 0, 0)  # White
+
+        # Draw bubble (background) with 3% opacity, no stroke
+        pdf_utils.draw_shapely_poly(c, final_bg, bubble_cmyk, alpha=0.03)
+        # Draw text
+        pdf_utils.draw_shapely_poly(c, final_text, text_cmyk, alpha=1.0)
 
 
 def process_orders():
