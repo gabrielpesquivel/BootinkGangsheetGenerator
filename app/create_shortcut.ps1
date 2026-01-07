@@ -2,7 +2,9 @@ $DesktopPath = [Environment]::GetFolderPath('Desktop')
 $RootDir = Split-Path -Parent $PSScriptRoot
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$DesktopPath\Gang Sheet Generator.lnk")
-$Shortcut.TargetPath = "$RootDir\dist\GangSheetGenerator.exe"
-$Shortcut.WorkingDirectory = "$RootDir\dist"
+# Run from source so changes are always reflected
+$Shortcut.TargetPath = "pythonw"
+$Shortcut.Arguments = "`"$PSScriptRoot\gui.py`""
+$Shortcut.WorkingDirectory = "$RootDir"
 $Shortcut.Save()
-Write-Host "Desktop shortcut created!" -ForegroundColor Green
+Write-Host "Desktop shortcut created (runs from source)!" -ForegroundColor Green
