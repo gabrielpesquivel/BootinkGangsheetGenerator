@@ -32,17 +32,18 @@ Automated gang sheet generation tool for Shopify store owners selling custom sti
 pip install -r requirements.txt
 
 # Run GUI
-python gui.py
+python app/gui.py
 
 # Or run command-line version (place CSVs in input_csv/ first)
-python main.py
+python app/main.py
 ```
 
 ### Option 3: Build Executable Yourself
 
 ```bash
 pip install -r requirements.txt
-python -m PyInstaller build_exe.spec --noconfirm
+cd app
+python -m PyInstaller build_exe.spec --noconfirm --distpath ../dist
 ```
 
 The executable will be created at `dist/GangSheetGenerator.exe`
@@ -51,19 +52,19 @@ The executable will be created at `dist/GangSheetGenerator.exe`
 
 | Command | Description |
 |---------|-------------|
-| `python gui.py` | Launch the GUI application |
-| `python main.py` | Run command-line version (reads from `input_csv/`) |
-| `python -m PyInstaller build_exe.spec --noconfirm` | Build the executable |
-| `powershell -ExecutionPolicy Bypass -File create_shortcut.ps1` | Create desktop shortcut |
+| `python app/gui.py` | Launch the GUI application |
+| `python app/main.py` | Run command-line version (reads from `input_csv/`) |
+| `cd app && python -m PyInstaller build_exe.spec --noconfirm --distpath ../dist` | Build the executable |
+| `powershell -ExecutionPolicy Bypass -File app/create_shortcut.ps1` | Create desktop shortcut |
 
 ## Create Desktop Shortcut
 
 ```powershell
 # PowerShell
-powershell -ExecutionPolicy Bypass -File create_shortcut.ps1
+powershell -ExecutionPolicy Bypass -File app/create_shortcut.ps1
 
 # Or double-click
-create_shortcut.bat
+app/create_shortcut.bat
 ```
 
 Or manually: Right-click `GangSheetGenerator.exe` → Send to → Desktop
@@ -116,8 +117,17 @@ Items containing "Priming Wipe" are automatically excluded.
 
 ```
 ShopifyOrdersPipeline/
-├── dist/                    # Built executable
-│   └── GangSheetGenerator.exe
+├── app/                     # Application source code
+│   ├── src/
+│   │   ├── config.py       # Page size, margins, sizing
+│   │   ├── geometry.py     # Text-to-shape conversion
+│   │   ├── layout.py       # Smart layout manager
+│   │   └── pdf_utils.py    # PDF generation
+│   ├── gui.py              # GUI application
+│   ├── main.py             # Core processing / CLI
+│   ├── build_exe.spec      # PyInstaller config
+│   ├── create_shortcut.ps1 # Desktop shortcut script
+│   └── create_shortcut.bat # Shortcut script launcher
 ├── assets/
 │   ├── fonts/              # Font files
 │   │   └── Industry_Ultra.ttf
@@ -131,22 +141,18 @@ ShopifyOrdersPipeline/
 │       ├── north_america/
 │       ├── oceania/
 │       └── south_america/
-├── src/
-│   ├── config.py           # Page size, margins, sizing
-│   ├── geometry.py         # Text-to-shape conversion
-│   ├── layout.py           # Smart layout manager
-│   └── pdf_utils.py        # PDF generation
-├── gui.py                  # GUI application
-├── main.py                 # Core processing / CLI
-├── build_exe.spec          # PyInstaller config
-├── create_shortcut.ps1     # Desktop shortcut script
-├── create_shortcut.bat     # Shortcut script launcher
-└── requirements.txt        # Python dependencies
+├── dist/                    # Built executable
+│   └── GangSheetGenerator.exe
+├── input_csv/              # Place CSV files here (CLI mode)
+├── output_sheet/           # Generated PDFs appear here
+├── .gitignore
+├── README.md
+└── requirements.txt
 ```
 
 ## Configuration
 
-Edit `src/config.py` to customize:
+Edit `app/src/config.py` to customize:
 
 ```python
 # Page Settings (A4)

@@ -1,7 +1,8 @@
 import os
 
 # Paths
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Go up from src/ -> app/ -> root/
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 INPUT_DIR = os.path.join(BASE_DIR, 'input_csv')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'output_sheet')
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')

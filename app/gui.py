@@ -17,7 +17,9 @@ if getattr(sys, 'frozen', False):
     # For output, use the directory where the exe is located
     EXE_DIR = os.path.dirname(sys.executable)
 else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # Running from source: go up from app/ to root/
+    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.dirname(APP_DIR)
     EXE_DIR = BASE_DIR
 
 # Override config paths for bundled app

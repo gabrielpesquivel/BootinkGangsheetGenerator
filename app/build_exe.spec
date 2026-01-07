@@ -1,25 +1,30 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
 PyInstaller spec file for Shopify Gang Sheet Generator
-Run with: pyinstaller build_exe.spec
+Run from app/ folder: python -m PyInstaller build_exe.spec --noconfirm
 """
 
 import sys
+import os
 from pathlib import Path
 
 # Get tkinterdnd2 path for bundling
 import tkinterdnd2
 tkdnd_path = Path(tkinterdnd2.__file__).parent
 
+# Get paths relative to this spec file
+SPEC_DIR = os.path.dirname(os.path.abspath(SPECPATH))
+ROOT_DIR = os.path.dirname(SPEC_DIR)
+
 block_cipher = None
 
 a = Analysis(
     ['gui.py'],
-    pathex=[],
+    pathex=[SPEC_DIR],
     binaries=[],
     datas=[
-        # Include assets folder
-        ('assets', 'assets'),
+        # Include assets folder from root
+        (os.path.join(ROOT_DIR, 'assets'), 'assets'),
         # Include tkinterdnd2 library files
         (str(tkdnd_path), 'tkinterdnd2'),
     ],
