@@ -9,6 +9,13 @@ import re
 # Regions that indicate a flag item
 FLAG_REGIONS = ['Europe', 'Asia', 'Americas', 'Africa', 'Oceania']
 
+# Categories that indicate a symbol item (CSV name -> folder name)
+SYMBOL_CATEGORY_MAP = {
+    'Animals': 'animals',
+    'Popular Symbols': 'popular',
+    'Religious Icons': 'religious',
+}
+
 # Build a lookup of all available flags (lowercase country name -> full path)
 def _build_flag_lookup():
     """Scan all flag subdirectories and build a lookup map."""
@@ -27,6 +34,76 @@ def _build_flag_lookup():
     return lookup
 
 FLAG_LOOKUP = _build_flag_lookup()
+
+
+# Build a lookup of all available symbols
+# Key format: "category/name - color" or "category/name" for colorless files
+def _build_symbol_lookup():
+    """Scan all symbol subdirectories and build a lookup map."""
+    lookup = {}
+    symbols_dir = os.path.join(config.ASSETS_DIR, 'symbols')
+    if not os.path.exists(symbols_dir):
+        return lookup
+
+    for subdir in os.listdir(symbols_dir):
+        subdir_path = os.path.join(symbols_dir, subdir)
+        if os.path.isdir(subdir_path):
+            category = subdir.lower()
+            for filename in os.listdir(subdir_path):
+                if filename.endswith('.svg'):
+                    # Extract symbol name (without .svg), store as lowercase
+                    # e.g., "COBRA - WHITE.svg" -> "animals/cobra - white"
+                    symbol_name = filename[:-4].lower()
+                    lookup_key = f"{category}/{symbol_name}"
+                    lookup[lookup_key] = os.path.join(subdir_path, filename)
+    return lookup
+
+
+SYMBOL_LOOKUP = _build_symbol_lookup()
+
+
+def get_symbol_path(lineitem_name):
+    """
+    Check if lineitem is a symbol item and return the symbol SVG path.
+
+    Args:
+        lineitem_name: The lineitem name (e.g., "Religious Icons - CHRISTIAN CROSS / Black")
+
+    Returns:
+        Path to symbol SVG file if it's a symbol item, None otherwise
+    """
+    # Check if it starts with a known symbol category
+    for csv_category, folder_name in SYMBOL_CATEGORY_MAP.items():
+        if lineitem_name.startswith(f'{csv_category} - '):
+            # Extract symbol name and color
+            rest = lineitem_name.split(' - ', 1)[1].strip()
+
+            # Parse "SYMBOL_NAME / COLOR" format
+            if ' / ' in rest:
+                symbol_name, color = rest.split(' / ', 1)
+                symbol_name = symbol_name.strip()
+                color = color.strip().upper()
+            else:
+                symbol_name = rest
+                color = None  # No color specified
+
+            # Try with color first (e.g., "religious/christian cross - black")
+            if color:
+                symbol_key = f"{folder_name}/{symbol_name} - {color}".lower()
+                symbol_path = SYMBOL_LOOKUP.get(symbol_key)
+                if symbol_path and os.path.exists(symbol_path):
+                    return symbol_path
+
+            # Fall back to colorless file (e.g., "religious/ying and yang")
+            symbol_key_no_color = f"{folder_name}/{symbol_name}".lower()
+            symbol_path = SYMBOL_LOOKUP.get(symbol_key_no_color)
+            if symbol_path and os.path.exists(symbol_path):
+                return symbol_path
+
+            print(f"Warning: Symbol file not found for '{symbol_name}' in category '{csv_category}'")
+            return None
+    return None
+
 
 def get_flag_path(lineitem_name):
     """
@@ -130,6 +207,21 @@ def collect_items_from_csv(df):
                 })
             continue
 
+        # Check if this is a symbol item
+        symbol_path = get_symbol_path(lineitem_name)
+        if symbol_path:
+            symbol_height_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS
+
+            for _ in range(qty):
+                items.append({
+                    'type': 'symbol',
+                    'width': config.GRID_SIZE,
+                    'height': config.GRID_SIZE,
+                    'symbol_path': symbol_path,
+                    'symbol_height_pts': symbol_height_pts
+                })
+            continue
+
         # Extract text and color
         text_color = 'BLACK'  # Default
         if ' - ' in lineitem_name:
@@ -184,6 +276,13 @@ def render_item(c, x, y, item):
         center_x = x + (w - svg_w) / 2
         center_y = y + (h - svg_h) / 2
         pdf_utils.draw_svg(c, item['flag_path'], center_x, center_y, item['flag_height_pts'])
+
+    elif item['type'] == 'symbol':
+        # Get symbol dimensions for centering
+        svg_w, svg_h = pdf_utils.get_svg_dimensions(item['symbol_path'], item['symbol_height_pts'])
+        center_x = x + (w - svg_w) / 2
+        center_y = y + (h - svg_h) / 2
+        pdf_utils.draw_svg(c, item['symbol_path'], center_x, center_y, item['symbol_height_pts'])
 
     elif item['type'] == 'sticker':
         # Translate geometry to position
