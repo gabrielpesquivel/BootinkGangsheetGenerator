@@ -341,8 +341,16 @@ def process_orders():
         layout_mgr = layout.OptimizedLayoutManager(c)
         placed_items = layout_mgr.place_items(items)
 
-        # Phase 3: Render all items
-        for x, y, item in placed_items:
+        # Phase 3: Render all items, handling page breaks
+        # Sort by page number to render items in correct order
+        placed_items.sort(key=lambda p: p[2])  # Sort by page number
+
+        current_page = 1
+        for x, y, page, item in placed_items:
+            # Handle page breaks during rendering
+            while current_page < page:
+                c.showPage()
+                current_page += 1
             render_item(c, x, y, item)
 
         # Save PDF

@@ -73,7 +73,8 @@ class OptimizedLayoutManager:
 
         # Check if we need a new page
         if self.current_page_y - height < config.MARGIN:
-            self.c.showPage()
+            # Don't call showPage() here - just track the page break
+            # The rendering loop will handle page changes
             self.page_count += 1
             self.current_page_y = config.PAGE_HEIGHT - config.MARGIN
             # Clear rows for new page
@@ -83,7 +84,8 @@ class OptimizedLayoutManager:
             'y': self.current_page_y,
             'remaining': self.usable_width,
             'height': height,
-            'items': []
+            'items': [],
+            'page': self.page_count  # Track which page this row belongs to
         }
         self.rows.append(new_row)
         return new_row
@@ -104,7 +106,7 @@ class OptimizedLayoutManager:
                    render_fn(canvas, x, y) draws the item
 
         Returns:
-            List of (x, y, item) tuples for all placed items
+            List of (x, y, page, item) tuples for all placed items
         """
         if not items:
             return []
@@ -143,7 +145,7 @@ class OptimizedLayoutManager:
             row['remaining'] -= w
             row['items'].append((x, w))
 
-            placed.append((x, y, item))
+            placed.append((x, y, row['page'], item))
 
         # Phase 2: Fill gaps with small items
         for item in small_items:
@@ -164,6 +166,6 @@ class OptimizedLayoutManager:
             row['remaining'] -= w
             row['items'].append((x, w))
 
-            placed.append((x, y, item))
+            placed.append((x, y, row['page'], item))
 
         return placed

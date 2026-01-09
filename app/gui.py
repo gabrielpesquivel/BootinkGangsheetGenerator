@@ -240,8 +240,13 @@ class App(TkinterDnDCustomTk):
         layout_mgr = layout.OptimizedLayoutManager(c)
         placed_items = layout_mgr.place_items(items)
 
-        # Render
-        for x, y, item in placed_items:
+        # Render all items, handling page breaks
+        placed_items.sort(key=lambda p: p[2])  # Sort by page number
+        current_page = 1
+        for x, y, page, item in placed_items:
+            while current_page < page:
+                c.showPage()
+                current_page += 1
             pipeline.render_item(c, x, y, item)
 
         # Save
