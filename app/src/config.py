@@ -4,6 +4,8 @@ import os
 # Go up from src/ -> app/ -> root/
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 INPUT_DIR = os.path.join(BASE_DIR, 'input_csv')
+ORDERS_DIR = os.path.join(INPUT_DIR, 'orders')
+CUSTOM_DIR = os.path.join(INPUT_DIR, 'custom')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'output_sheet')
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 FONT_PATH = os.path.join(ASSETS_DIR, 'fonts', 'Industry_Ultra.ttf')

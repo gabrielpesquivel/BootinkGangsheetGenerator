@@ -61,6 +61,64 @@ def _build_symbol_lookup():
 
 SYMBOL_LOOKUP = _build_symbol_lookup()
 
+# Patterns that indicate a custom item needing lookup
+CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER']
+
+
+def load_custom_lookup(custom_csv_path):
+    """
+    Load the custom CSV and build a lookup dictionary.
+
+    The custom CSV has rows where:
+    - Lineitem row: Order #, Lineitem name = "Initials - CUSTOM INITIALS / BLACK"
+    - Attribute row (following): Lineitem Attribute Key = "CUSTOM INITIALS", Value = "HÅ"
+
+    Returns:
+        Dict mapping (order_number, lineitem_name) -> custom_value
+    """
+    lookup = {}
+    df = pd.read_csv(custom_csv_path)
+
+    current_order = None
+    current_lineitem = None
+
+    for index, row in df.iterrows():
+        order_num = str(row.get('Name', '')).strip()
+        lineitem_name = str(row.get('Lineitem name', '')).strip()
+        attr_key = str(row.get('Lineitem Attribute Key', '')).strip()
+        attr_value = str(row.get('Lineitem Attribute Value', '')).strip()
+
+        # Track current order (might be empty in continuation rows)
+        if order_num:
+            current_order = order_num
+
+        # If this row has a lineitem name, track it
+        if lineitem_name:
+            current_lineitem = lineitem_name
+
+        # If this row has attribute key/value, create the lookup entry
+        if attr_key and attr_value and current_order and current_lineitem:
+            lookup[(current_order, current_lineitem)] = attr_value
+
+    return lookup
+
+
+def is_custom_item(lineitem_name):
+    """Check if lineitem name contains a custom placeholder pattern."""
+    upper_name = lineitem_name.upper()
+    return any(pattern in upper_name for pattern in CUSTOM_PATTERNS)
+
+
+def get_custom_text(order_num, lineitem_name, custom_lookup):
+    """
+    Look up the actual custom text for a custom item.
+
+    Returns the custom text if found, or None if not found.
+    """
+    if not custom_lookup:
+        return None
+    return custom_lookup.get((order_num, lineitem_name))
+
 
 def get_symbol_path(lineitem_name):
     """
@@ -174,17 +232,27 @@ def determine_size_category(text):
     return 'Words'
 
 
-def collect_items_from_csv(df):
+def collect_items_from_csv(df, custom_lookup=None):
     """
     First pass: collect all items from the CSV with their dimensions and render data.
+
+    Args:
+        df: DataFrame from the orders CSV
+        custom_lookup: Dict mapping (order_number, lineitem_name) -> custom_value
 
     Returns:
         List of item dicts with 'width', 'height', 'type', and type-specific data
     """
     items = []
+    current_order = None
 
     for index, row in df.iterrows():
         lineitem_name = str(row.get('Lineitem name', ''))
+
+        # Track current order number (might be empty in continuation rows)
+        order_num = str(row.get('Name', '')).strip()
+        if order_num:
+            current_order = order_num
 
         # Skip items we don't want to print
         if not lineitem_name or lineitem_name.strip() == '' or 'Priming Wipe' in lineitem_name:
@@ -235,6 +303,14 @@ def collect_items_from_csv(df):
                         text_color = color_part
         else:
             text = lineitem_name
+
+        # Check if this is a custom item that needs lookup
+        if is_custom_item(lineitem_name) and current_order and custom_lookup:
+            custom_text = get_custom_text(current_order, lineitem_name, custom_lookup)
+            if custom_text:
+                text = custom_text
+            else:
+                print(f"Warning: No custom value found for order {current_order}, item '{lineitem_name}'")
 
         if not text or text.strip() == '':
             continue
@@ -307,18 +383,36 @@ def render_item(c, x, y, item):
 
 
 def process_orders():
-    # 1. Find CSV files
-    input_files = [f for f in os.listdir(config.INPUT_DIR) if f.endswith('.csv')]
+    # 1. Find orders CSV files in orders/ subfolder
+    if not os.path.exists(config.ORDERS_DIR):
+        print(f"Orders directory not found: {config.ORDERS_DIR}")
+        return
+
+    input_files = [f for f in os.listdir(config.ORDERS_DIR) if f.endswith('.csv')]
 
     if not input_files:
-        print("No CSV files found in input_csv/")
+        print("No CSV files found in input_csv/orders/")
         return
+
+    # 2. Load custom lookup from custom/ subfolder
+    custom_lookup = {}
+    if os.path.exists(config.CUSTOM_DIR):
+        custom_files = [f for f in os.listdir(config.CUSTOM_DIR) if f.endswith('.csv')]
+        for custom_file in custom_files:
+            custom_path = os.path.join(config.CUSTOM_DIR, custom_file)
+            print(f"Loading custom values from {custom_file}...")
+            file_lookup = load_custom_lookup(custom_path)
+            custom_lookup.update(file_lookup)
+            print(f"  Loaded {len(file_lookup)} custom values")
+
+    if not custom_lookup:
+        print("Warning: No custom CSV files found in input_csv/custom/ - custom items will use placeholder text")
 
     for csv_file in input_files:
         print(f"Processing {csv_file}...")
 
         # Setup paths
-        input_path = os.path.join(config.INPUT_DIR, csv_file)
+        input_path = os.path.join(config.ORDERS_DIR, csv_file)
         output_filename = csv_file.replace('.csv', '_gangsheet.pdf')
         output_path = os.path.join(config.OUTPUT_DIR, output_filename)
 
@@ -328,8 +422,8 @@ def process_orders():
         # Setup PDF
         c = pdf_utils.setup_canvas(output_path, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
 
-        # Phase 1: Collect all items
-        items = collect_items_from_csv(df)
+        # Phase 1: Collect all items (with custom lookup)
+        items = collect_items_from_csv(df, custom_lookup)
         print(f"  Collected {len(items)} items")
 
         # Count by size for stats
