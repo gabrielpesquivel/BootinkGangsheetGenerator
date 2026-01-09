@@ -7,7 +7,7 @@ from src import config, geometry, pdf_utils, layout
 import re
 
 # Regions that indicate a flag item
-FLAG_REGIONS = ['Europe', 'Asia', 'Americas', 'Africa', 'Oceania']
+FLAG_REGIONS = ['Europe', 'Asia', 'Americas', 'Africa', 'Oceania', 'South America', 'Caribbean', 'Central America', 'Middle East', 'North America']
 
 # Categories that indicate a symbol item (CSV name -> folder name)
 SYMBOL_CATEGORY_MAP = {
