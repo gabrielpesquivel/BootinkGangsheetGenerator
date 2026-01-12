@@ -128,3 +128,96 @@ def create_sticker_geometry(text, font_path, size_config, rect_width, rect_heigh
     bg_shape = affinity.translate(bg_shape, xoff=center_x, yoff=center_y)
 
     return text_shape, bg_shape, rect_width, rect_height
+
+
+def create_two_row_sticker_geometry(text, font_path, size_config, rect_width, rect_height):
+    """
+    Creates sticker geometry with text split into two rows to fit in a single square.
+    Used for custom flag items. Scales down if needed to fit.
+
+    Args:
+        text: Text string to render (e.g., "POLAND FLAG")
+        font_path: Path to font file
+        size_config: Size configuration dict with font_size and offset_mm
+        rect_width: Target rectangle width in points
+        rect_height: Target rectangle height in points
+    """
+    offset_pts = size_config['offset_mm'] * config.MM_TO_PTS
+
+    # Split text into two rows - split at space before "FLAG" or at midpoint
+    words = text.split()
+    if len(words) >= 2:
+        # Put all but last word on row 1, last word on row 2
+        row1 = ' '.join(words[:-1])
+        row2 = words[-1]
+    else:
+        # Single word - split at midpoint
+        mid = len(text) // 2
+        row1 = text[:mid]
+        row2 = text[mid:]
+
+    # Start with the configured font size and scale down if needed
+    base_font_size = size_config['font_size']
+    max_iterations = 10
+    scale_factor = 1.0
+
+    for iteration in range(max_iterations):
+        font_size_pts = base_font_size * scale_factor
+        line_spacing = font_size_pts * 0.3  # Space between rows
+
+        # Create shapes for each row
+        row1_shape = text_to_shapely(row1, font_path, font_size_pts)
+        row2_shape = text_to_shapely(row2, font_path, font_size_pts)
+
+        # Get bounds of each row
+        r1_minx, r1_miny, r1_maxx, r1_maxy = row1_shape.bounds
+        r2_minx, r2_miny, r2_maxx, r2_maxy = row2_shape.bounds
+
+        r1_width = r1_maxx - r1_minx
+        r1_height = r1_maxy - r1_miny
+        r2_width = r2_maxx - r2_minx
+        r2_height = r2_maxy - r2_miny
+
+        # Position row2 below row1
+        # Move row1 to origin first
+        row1_shape = affinity.translate(row1_shape, xoff=-r1_minx, yoff=-r1_miny)
+        # Move row2 below row1
+        row2_shape = affinity.translate(row2_shape, xoff=-r2_minx, yoff=-r2_miny - r1_height - line_spacing)
+
+        # Combine into single shape
+        combined_shape = unary_union([row1_shape, row2_shape])
+
+        # Create background
+        bg_shape = combined_shape.buffer(offset_pts, join_style=1, resolution=16)
+
+        # Get combined bounds
+        minx, miny, maxx, maxy = bg_shape.bounds
+        total_width = maxx - minx
+        total_height = maxy - miny
+
+        # Check if it fits within the rectangle (with some margin)
+        margin = rect_width * 0.05  # 5% margin
+        available_width = rect_width - margin * 2
+        available_height = rect_height - margin * 2
+
+        if total_width <= available_width and total_height <= available_height:
+            # It fits! Center and return
+            center_x = (rect_width - total_width) / 2 - minx
+            center_y = (rect_height - total_height) / 2 - miny
+
+            combined_shape = affinity.translate(combined_shape, xoff=center_x, yoff=center_y)
+            bg_shape = affinity.translate(bg_shape, xoff=center_x, yoff=center_y)
+
+            return combined_shape, bg_shape, rect_width, rect_height
+
+        # Scale down for next iteration
+        scale_factor *= 0.85
+
+    # Final fallback - use the last scaled version and force center it
+    center_x = (rect_width - total_width) / 2 - minx
+    center_y = (rect_height - total_height) / 2 - miny
+
+    combined_shape = affinity.translate(combined_shape, xoff=center_x, yoff=center_y)
+    bg_shape = affinity.translate(bg_shape, xoff=center_x, yoff=center_y)
+
+    return combined_shape, bg_shape, rect_width, rect_height

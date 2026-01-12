@@ -313,6 +313,7 @@ def collect_items_from_csv(df, custom_lookup=None):
             text = lineitem_name
 
         # Check if this is a custom item that needs lookup
+        is_custom_flag = False
         if is_custom_item(lineitem_name) and current_order and custom_lookup:
             custom_text = get_custom_text(current_order, lineitem_name, custom_lookup)
             if custom_text:
@@ -320,6 +321,7 @@ def collect_items_from_csv(df, custom_lookup=None):
                 if 'REQUEST A FLAG' in lineitem_name.upper():
                     text = custom_text.upper() + " FLAG"
                     text_color = 'FLURO_YELLOW'
+                    is_custom_flag = True
                 else:
                     text = custom_text
             else:
@@ -331,14 +333,25 @@ def collect_items_from_csv(df, custom_lookup=None):
         # Determine size and geometry
         size = determine_size_category(text)
         size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
-        grid_squares = determine_grid_squares(text)
+
+        # Custom flags always use 1 grid square with two-row layout
+        if is_custom_flag:
+            grid_squares = 1
+        else:
+            grid_squares = determine_grid_squares(text)
         rect_width = grid_squares * config.GRID_SIZE
         rect_height = config.GRID_SIZE
 
         try:
-            text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
-                text, config.FONT_PATH, size_cfg, rect_width, rect_height
-            )
+            if is_custom_flag:
+                # Use two-row layout for custom flags
+                text_geo, bg_geo, w, h = geometry.create_two_row_sticker_geometry(
+                    text, config.FONT_PATH, size_cfg, rect_width, rect_height
+                )
+            else:
+                text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+                    text, config.FONT_PATH, size_cfg, rect_width, rect_height
+                )
         except Exception as e:
             # Font doesn't support these characters - skip this item
             safe_text = text.encode('ascii', 'replace').decode('ascii')
