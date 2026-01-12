@@ -50,8 +50,8 @@ class App(TkinterDnDCustomTk):
 
         # Window setup
         self.title("Shopify Gang Sheet Generator")
-        self.geometry("600x480")
-        self.minsize(500, 420)
+        self.geometry("600x520")
+        self.minsize(500, 480)
 
         # Theme
         ctk.set_appearance_mode("dark")
@@ -74,25 +74,41 @@ class App(TkinterDnDCustomTk):
         # Main container
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)  # Drop zones row expands
 
         # Title
         title_label = ctk.CTkLabel(
             self,
-            text="Gang Sheet Generator",
+            text="Orders to Gangsheet",
             font=ctk.CTkFont(size=24, weight="bold")
         )
-        title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 10))
+        title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 5))
+
+        # Instructions
+        instructions_text = (
+            "How to use:\n"
+            "1) Drop or browse for Shopify Orders CSV file(s)\n"
+            "2) Optionally add a Custom CSV for personalised values\n"
+            "3) Click Generate to create gang sheets"
+        )
+        instructions_label = ctk.CTkLabel(
+            self,
+            text=instructions_text,
+            font=ctk.CTkFont(size=11),
+            text_color="gray",
+            justify="left"
+        )
+        instructions_label.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 10))
 
         # Orders CSV drop zone (left)
         self.orders_frame = ctk.CTkFrame(self, corner_radius=15)
-        self.orders_frame.grid(row=1, column=0, padx=(20, 10), pady=10, sticky="nsew")
+        self.orders_frame.grid(row=2, column=0, padx=(20, 10), pady=10, sticky="nsew")
         self.orders_frame.grid_columnconfigure(0, weight=1)
         self.orders_frame.grid_rowconfigure(0, weight=1)
 
         self.orders_label = ctk.CTkLabel(
             self.orders_frame,
-            text="Orders CSV\n\nDrag & Drop\nor click to browse",
+            text="Orders CSV\n\nDrop or click",
             font=ctk.CTkFont(size=14),
             text_color="gray"
         )
@@ -108,13 +124,13 @@ class App(TkinterDnDCustomTk):
 
         # Custom CSV drop zone (right)
         self.custom_frame = ctk.CTkFrame(self, corner_radius=15)
-        self.custom_frame.grid(row=1, column=1, padx=(10, 20), pady=10, sticky="nsew")
+        self.custom_frame.grid(row=2, column=1, padx=(10, 20), pady=10, sticky="nsew")
         self.custom_frame.grid_columnconfigure(0, weight=1)
         self.custom_frame.grid_rowconfigure(0, weight=1)
 
         self.custom_label = ctk.CTkLabel(
             self.custom_frame,
-            text="Custom CSV\n(Optional)\n\nDrag & Drop\nor click to browse",
+            text="Custom CSV\n(Optional)\n\nDrop or click",
             font=ctk.CTkFont(size=14),
             text_color="gray"
         )
@@ -136,7 +152,7 @@ class App(TkinterDnDCustomTk):
             font=ctk.CTkFont(size=16, weight="bold"),
             height=40
         )
-        self.generate_btn.grid(row=2, column=0, columnspan=2, padx=20, pady=(10, 5))
+        self.generate_btn.grid(row=3, column=0, columnspan=2, padx=20, pady=(10, 5))
 
         # Status label
         self.status_label = ctk.CTkLabel(
@@ -144,20 +160,32 @@ class App(TkinterDnDCustomTk):
             text="Select an Orders CSV to get started",
             font=ctk.CTkFont(size=14)
         )
-        self.status_label.grid(row=3, column=0, columnspan=2, padx=20, pady=(0, 5))
+        self.status_label.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 5))
 
         # Progress bar
         self.progress = ctk.CTkProgressBar(self)
-        self.progress.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="ew")
+        self.progress.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="ew")
         self.progress.set(0)
 
         # Open folder button
         self.open_folder_btn = ctk.CTkButton(
             self,
             text="Open Output Folder",
-            command=self._open_output_folder
+            command=self._open_output_folder,
+            fg_color="transparent",
+            border_width=1,
+            text_color=("gray10", "gray90")
         )
-        self.open_folder_btn.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 20))
+        self.open_folder_btn.grid(row=6, column=0, columnspan=2, padx=20, pady=(0, 10))
+
+        # Footer with licensing
+        footer_label = ctk.CTkLabel(
+            self,
+            text="© 2026 Bootink. All rights reserved.",
+            font=ctk.CTkFont(size=10),
+            text_color="gray50"
+        )
+        footer_label.grid(row=7, column=0, columnspan=2, padx=20, pady=(5, 15))
 
     def _on_drag_enter(self, event, zone='orders'):
         """Visual feedback when dragging over."""
@@ -182,12 +210,12 @@ class App(TkinterDnDCustomTk):
         if self.orders_files:
             count = len(self.orders_files)
             self.orders_label.configure(
-                text=f"Orders CSV\n\n{count} file(s) selected\n\nClick to change",
+                text=f"{count} file(s) selected\n\nClick to change",
                 text_color="green"
             )
         else:
             self.orders_label.configure(
-                text="Orders CSV\n\nDrag & Drop\nor click to browse",
+                text="Orders CSV\n\nDrop or click",
                 text_color="gray"
             )
 
@@ -199,12 +227,12 @@ class App(TkinterDnDCustomTk):
             if len(filename) > 20:
                 filename = filename[:17] + "..."
             self.custom_label.configure(
-                text=f"Custom CSV\n\n{filename}\n\nClick to change",
+                text=f"{filename}\n\nClick to change",
                 text_color="green"
             )
         else:
             self.custom_label.configure(
-                text="Custom CSV\n(Optional)\n\nDrag & Drop\nor click to browse",
+                text="Custom CSV\n(Optional)\n\nDrop or click",
                 text_color="gray"
             )
 
@@ -234,7 +262,7 @@ class App(TkinterDnDCustomTk):
             if self.custom_file:
                 self.status_label.configure(
                     text="Ready to generate!",
-                    text_color="green"
+                    text_color="orange"
                 )
             else:
                 self.status_label.configure(
@@ -346,35 +374,49 @@ class App(TkinterDnDCustomTk):
         # Reload flag lookup (in case paths changed)
         pipeline.FLAG_LOOKUP = pipeline._build_flag_lookup()
 
-        # Setup paths
+        # Setup paths - create subfolder for each order
         filename = os.path.basename(csv_path)
-        output_filename = filename.replace('.csv', '_gangsheet.pdf')
-        output_path = os.path.join(config.OUTPUT_DIR, output_filename)
+        order_name = filename.replace('.csv', '').replace('.CSV', '')
+        order_folder = os.path.join(config.OUTPUT_DIR, order_name)
+        os.makedirs(order_folder, exist_ok=True)
+
+        output_path_with_border = os.path.join(order_folder, 'gangsheet.pdf')
+        output_path_no_border = os.path.join(order_folder, 'gangsheet_no_border.pdf')
 
         # Load data
         df = pd.read_csv(csv_path)
 
-        # Setup PDF
-        c = pdf_utils.setup_canvas(output_path, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
+        # Setup both PDFs
+        c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
+        c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
 
         # Collect items with custom lookup
         items = pipeline.collect_items_from_csv(df, custom_lookup)
 
-        # Layout
-        layout_mgr = layout.OptimizedLayoutManager(c)
+        # Layout (use same layout for both)
+        layout_mgr = layout.OptimizedLayoutManager(c_with_border)
         placed_items = layout_mgr.place_items(items)
 
-        # Render all items, handling page breaks
+        # Render all items to both PDFs, handling page breaks
         placed_items.sort(key=lambda p: p[2])  # Sort by page number
-        current_page = 1
+        current_page_with_border = 1
+        current_page_no_border = 1
         for x, y, page, item in placed_items:
-            while current_page < page:
-                c.showPage()
-                current_page += 1
-            pipeline.render_item(c, x, y, item)
+            # Handle page breaks for PDF with border
+            while current_page_with_border < page:
+                c_with_border.showPage()
+                current_page_with_border += 1
+            pipeline.render_item(c_with_border, x, y, item, draw_cutting_border=True)
 
-        # Save
-        c.save()
+            # Handle page breaks for PDF without border
+            while current_page_no_border < page:
+                c_no_border.showPage()
+                current_page_no_border += 1
+            pipeline.render_item(c_no_border, x, y, item, draw_cutting_border=False)
+
+        # Save both PDFs
+        c_with_border.save()
+        c_no_border.save()
 
     def _check_queue(self):
         """Check message queue for updates from worker thread."""
