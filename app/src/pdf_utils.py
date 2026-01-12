@@ -79,10 +79,19 @@ def draw_svg(c, svg_path, x, y, target_height_pts):
     return drawing.width, drawing.height
 
 
-def draw_shapely_poly(c, poly, color, alpha=1.0):
-    """Draws a Shapely polygon onto the ReportLab canvas."""
+def draw_shapely_poly(c, poly, color, alpha=1.0, stroke_color=None, stroke_width=0):
+    """Draws a Shapely polygon onto the ReportLab canvas.
+
+    Args:
+        c: ReportLab canvas
+        poly: Shapely polygon or multipolygon
+        color: Fill color
+        alpha: Fill opacity (0.0 to 1.0)
+        stroke_color: Optional stroke color
+        stroke_width: Stroke width in points
+    """
     path = c.beginPath()
-    
+
     # Handle both Polygon and MultiPolygon
     if poly.geom_type == 'Polygon':
         geoms = [poly]
@@ -95,7 +104,7 @@ def draw_shapely_poly(c, poly, color, alpha=1.0):
         for i in range(1, len(x)):
             path.lineTo(x[i], y[i])
         path.close()
-        
+
         # Handle holes (like inside 'O')
         for interior in p.interiors:
             xi, yi = interior.xy
@@ -107,5 +116,12 @@ def draw_shapely_poly(c, poly, color, alpha=1.0):
     c.saveState()
     c.setFillAlpha(alpha)
     c.setFillColor(color)
-    c.drawPath(path, fill=1, stroke=0)
+
+    # Handle stroke if specified
+    if stroke_color and stroke_width > 0:
+        c.setStrokeColor(stroke_color)
+        c.setLineWidth(stroke_width)
+        c.drawPath(path, fill=1, stroke=1)
+    else:
+        c.drawPath(path, fill=1, stroke=0)
     c.restoreState()
