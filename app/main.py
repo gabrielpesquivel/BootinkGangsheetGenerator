@@ -398,8 +398,8 @@ def render_item(c, x, y, item, draw_cutting_border=True):
         final_text = affinity.translate(item['text_geo'], xoff=x, yoff=y)
         final_bg = affinity.translate(item['bg_geo'], xoff=x, yoff=y)
 
-        # 0.6mm stroke width in points
-        stroke_width_pts = 0.6 * config.MM_TO_PTS
+        # 0.6mm stroke width
+        stroke_width_pts = 0.6
 
         # Determine colors based on text color
         text_color = item.get('text_color', 'BLACK')
