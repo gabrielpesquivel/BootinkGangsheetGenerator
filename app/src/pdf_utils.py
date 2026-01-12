@@ -85,7 +85,7 @@ def draw_shapely_poly(c, poly, color, alpha=1.0, stroke_color=None, stroke_width
     Args:
         c: ReportLab canvas
         poly: Shapely polygon or multipolygon
-        color: Fill color
+        color: Fill color (CMYKColor or other)
         alpha: Fill opacity (0.0 to 1.0)
         stroke_color: Optional stroke color
         stroke_width: Stroke width in points
@@ -114,8 +114,17 @@ def draw_shapely_poly(c, poly, color, alpha=1.0, stroke_color=None, stroke_width
             path.close()
 
     c.saveState()
-    c.setFillAlpha(alpha)
-    c.setFillColor(color)
+
+    # Create color with alpha baked in
+    if hasattr(color, 'cyan'):
+        # CMYK color - recreate with alpha
+        fill_color = CMYKColor(color.cyan, color.magenta, color.yellow, color.black, alpha=alpha)
+    else:
+        # RGB or other color
+        c.setFillAlpha(alpha)
+        fill_color = color
+
+    c.setFillColor(fill_color)
 
     # Handle stroke if specified
     if stroke_color and stroke_width > 0:
