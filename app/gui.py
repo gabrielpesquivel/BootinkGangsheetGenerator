@@ -14,13 +14,13 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 # Handle PyInstaller bundled app paths
 if getattr(sys, 'frozen', False):
     BASE_DIR = sys._MEIPASS
-    # For output, use the directory where the exe is located
-    EXE_DIR = os.path.dirname(sys.executable)
+    # For output, use the user's Downloads folder
+    DOWNLOADS_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
 else:
     # Running from source: go up from app/ to root/
     APP_DIR = os.path.dirname(os.path.abspath(__file__))
     BASE_DIR = os.path.dirname(APP_DIR)
-    EXE_DIR = BASE_DIR
+    DOWNLOADS_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
 
 # Override config paths for bundled app
 import src.config as config
@@ -28,7 +28,7 @@ config.BASE_DIR = BASE_DIR
 config.ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 config.FONT_PATH = os.path.join(config.ASSETS_DIR, 'fonts', 'Industry_Ultra.ttf')
 config.FLAGS_DIR = os.path.join(config.ASSETS_DIR, 'flags')
-config.OUTPUT_DIR = os.path.join(EXE_DIR, 'output_sheet')
+config.OUTPUT_DIR = os.path.join(DOWNLOADS_DIR, 'GangSheets')
 
 # Ensure output directory exists
 os.makedirs(config.OUTPUT_DIR, exist_ok=True)
