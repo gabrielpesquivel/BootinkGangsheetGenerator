@@ -339,18 +339,10 @@ def collect_items_from_csv(df, custom_lookup=None):
                 text, config.FONT_PATH, size_cfg, rect_width, rect_height
             )
         except Exception as e:
-            # Font doesn't support these characters - render "UNSUPPORTED" instead
+            # Font doesn't support these characters - skip this item
             safe_text = text.encode('ascii', 'replace').decode('ascii')
-            print(f"Warning: Could not render text '{safe_text}' - using UNSUPPORTED placeholder")
-            text = "UNSUPPORTED"
-            size = determine_size_category(text)
-            size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
-            grid_squares = determine_grid_squares(text)
-            rect_width = grid_squares * config.GRID_SIZE
-            rect_height = config.GRID_SIZE
-            text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
-                text, config.FONT_PATH, size_cfg, rect_width, rect_height
-            )
+            print(f"Warning: Could not render text '{safe_text}' - skipping item")
+            continue
 
         for _ in range(qty):
             items.append({
