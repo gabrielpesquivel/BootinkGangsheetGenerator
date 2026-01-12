@@ -13,11 +13,32 @@ import tkinterdnd2
 tkdnd_path = Path(tkinterdnd2.__file__).parent
 
 # Get paths relative to this spec file
-# SPECPATH is the directory containing the .spec file (not the file itself)
 SPEC_DIR = Path(SPECPATH).resolve()
 ROOT_DIR = SPEC_DIR.parent
 
 block_cipher = None
+
+# Modules to exclude for smaller size
+excluded_modules = [
+    # Testing frameworks
+    'pytest', 'py', '_pytest', 'pluggy',
+    'unittest', 'doctest',
+    # IPython/Jupyter
+    'IPython', 'ipykernel', 'jupyter', 'notebook', 'ipywidgets',
+    # Unused scientific packages
+    'scipy', 'matplotlib', 'mpl_toolkits',
+    'sympy', 'statsmodels', 'sklearn', 'skimage',
+    # Database drivers not needed
+    'sqlalchemy', 'psycopg2', 'pymysql',
+    # Unused pandas backends
+    'pandas.tests', 'pandas.io.sql', 'pandas.io.gbq',
+    'pandas.io.stata', 'pandas.io.spss', 'pandas.io.sas',
+    # Unused numpy testing
+    'numpy.testing', 'numpy.distutils', 'numpy.f2py',
+    # Other unused
+    'tkinter.test', 'lib2to3',
+    'pydoc', 'curses',
+]
 
 a = Analysis(
     ['gui.py'],
@@ -49,7 +70,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excluded_modules,
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -69,10 +90,10 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,  # Disable UPX - faster startup (no decompression needed)
     upx_exclude=[],
-    runtime_tmpdir=None,
-    console=False,  # No console window
+    runtime_tmpdir='BootinkCache',  # Persistent cache - faster subsequent launches
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
