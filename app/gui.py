@@ -74,7 +74,7 @@ class App(TkinterDnDCustomTk):
         # Main container
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)  # Drop zones row expands
+        self.grid_rowconfigure(3, weight=1)  # Drop zones row expands
 
         # Title
         title_label = ctk.CTkLabel(
@@ -82,7 +82,11 @@ class App(TkinterDnDCustomTk):
             text="Orders to Gangsheet",
             font=ctk.CTkFont(size=24, weight="bold")
         )
-        title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 5))
+        title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 10))
+
+        # Separator line
+        separator = ctk.CTkFrame(self, height=2, fg_color="gray30")
+        separator.grid(row=1, column=0, columnspan=2, padx=40, pady=(0, 10), sticky="ew")
 
         # Instructions
         instructions_text = (
@@ -98,11 +102,11 @@ class App(TkinterDnDCustomTk):
             text_color="gray",
             justify="left"
         )
-        instructions_label.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 10))
+        instructions_label.grid(row=2, column=0, columnspan=2, padx=20, pady=(0, 10))
 
         # Orders CSV drop zone (left)
         self.orders_frame = ctk.CTkFrame(self, corner_radius=15)
-        self.orders_frame.grid(row=2, column=0, padx=(20, 10), pady=10, sticky="nsew")
+        self.orders_frame.grid(row=3, column=0, padx=(20, 10), pady=10, sticky="nsew")
         self.orders_frame.grid_columnconfigure(0, weight=1)
         self.orders_frame.grid_rowconfigure(0, weight=1)
 
@@ -124,7 +128,7 @@ class App(TkinterDnDCustomTk):
 
         # Custom CSV drop zone (right)
         self.custom_frame = ctk.CTkFrame(self, corner_radius=15)
-        self.custom_frame.grid(row=2, column=1, padx=(10, 20), pady=10, sticky="nsew")
+        self.custom_frame.grid(row=3, column=1, padx=(10, 20), pady=10, sticky="nsew")
         self.custom_frame.grid_columnconfigure(0, weight=1)
         self.custom_frame.grid_rowconfigure(0, weight=1)
 
@@ -152,7 +156,7 @@ class App(TkinterDnDCustomTk):
             font=ctk.CTkFont(size=16, weight="bold"),
             height=40
         )
-        self.generate_btn.grid(row=3, column=0, columnspan=2, padx=20, pady=(10, 5))
+        self.generate_btn.grid(row=4, column=0, columnspan=2, padx=20, pady=(10, 5))
 
         # Status label
         self.status_label = ctk.CTkLabel(
@@ -160,11 +164,11 @@ class App(TkinterDnDCustomTk):
             text="Select an Orders CSV to get started",
             font=ctk.CTkFont(size=14)
         )
-        self.status_label.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 5))
+        self.status_label.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 5))
 
         # Progress bar
         self.progress = ctk.CTkProgressBar(self)
-        self.progress.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="ew")
+        self.progress.grid(row=6, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="ew")
         self.progress.set(0)
 
         # Open folder button
@@ -176,7 +180,7 @@ class App(TkinterDnDCustomTk):
             border_width=1,
             text_color=("gray10", "gray90")
         )
-        self.open_folder_btn.grid(row=6, column=0, columnspan=2, padx=20, pady=(0, 10))
+        self.open_folder_btn.grid(row=7, column=0, columnspan=2, padx=20, pady=(0, 10))
 
         # Footer with licensing
         footer_label = ctk.CTkLabel(
@@ -185,7 +189,7 @@ class App(TkinterDnDCustomTk):
             font=ctk.CTkFont(size=10),
             text_color="gray50"
         )
-        footer_label.grid(row=7, column=0, columnspan=2, padx=20, pady=(5, 15))
+        footer_label.grid(row=8, column=0, columnspan=2, padx=20, pady=(5, 15))
 
     def _on_drag_enter(self, event, zone='orders'):
         """Visual feedback when dragging over."""
