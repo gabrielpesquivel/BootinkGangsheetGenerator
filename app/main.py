@@ -358,12 +358,13 @@ def collect_items_from_csv(df, custom_lookup=None):
     return items
 
 
-def render_item(c, x, y, item):
+def render_item(c, x, y, item, draw_cutting_border=True):
     """Render a single item at the given position."""
     w, h = item['width'], item['height']
 
-    # Draw magenta cutting rectangle
-    pdf_utils.draw_cutting_rectangle(c, x, y, w, h)
+    # Draw magenta cutting rectangle (optional)
+    if draw_cutting_border:
+        pdf_utils.draw_cutting_rectangle(c, x, y, w, h)
 
     if item['type'] == 'flag':
         # Get flag dimensions for centering
@@ -384,25 +385,34 @@ def render_item(c, x, y, item):
         final_text = affinity.translate(item['text_geo'], xoff=x, yoff=y)
         final_bg = affinity.translate(item['bg_geo'], xoff=x, yoff=y)
 
+        # 0.6mm stroke width in points
+        stroke_width_pts = 0.6 * config.MM_TO_PTS
+
         # Determine colors based on text color
         text_color = item.get('text_color', 'BLACK')
         if text_color == 'WHITE':
-            # White text with black bubble fill at 3%
+            # White text with black bubble fill at 3%, black stroke
             text_cmyk = CMYKColor(0, 0, 0, 0)  # White
             bubble_cmyk = CMYKColor(0, 0, 0, 1)  # Black
+            stroke_cmyk = CMYKColor(0, 0, 0, 1)  # Black stroke
         elif text_color == 'FLURO_YELLOW':
             # Fluorescent yellow text with white bubble fill at 3%
             text_cmyk = CMYKColor(0, 0, 1, 0)  # Yellow
             bubble_cmyk = CMYKColor(0, 0, 0, 0)  # White
+            stroke_cmyk = None
         else:
             # Black text with white bubble fill at 3%
             text_cmyk = CMYKColor(0, 0, 0, 1)  # Black
             bubble_cmyk = CMYKColor(0, 0, 0, 0)  # White
+            stroke_cmyk = None
 
         # Draw bubble (background) with 3% opacity, no stroke
         pdf_utils.draw_shapely_poly(c, final_bg, bubble_cmyk, alpha=0.03)
-        # Draw text
-        pdf_utils.draw_shapely_poly(c, final_text, text_cmyk, alpha=1.0)
+        # Draw text (with stroke for white text)
+        if stroke_cmyk:
+            pdf_utils.draw_shapely_poly(c, final_text, text_cmyk, alpha=1.0, stroke_color=stroke_cmyk, stroke_width=stroke_width_pts)
+        else:
+            pdf_utils.draw_shapely_poly(c, final_text, text_cmyk, alpha=1.0)
 
 
 def process_orders():
@@ -436,14 +446,17 @@ def process_orders():
 
         # Setup paths
         input_path = os.path.join(config.ORDERS_DIR, csv_file)
-        output_filename = csv_file.replace('.csv', '_gangsheet.pdf')
-        output_path = os.path.join(config.OUTPUT_DIR, output_filename)
+        output_filename_with_border = csv_file.replace('.csv', '_gangsheet.pdf')
+        output_filename_no_border = csv_file.replace('.csv', '_gangsheet_no_border.pdf')
+        output_path_with_border = os.path.join(config.OUTPUT_DIR, output_filename_with_border)
+        output_path_no_border = os.path.join(config.OUTPUT_DIR, output_filename_no_border)
 
         # Load Data
         df = pd.read_csv(input_path)
 
-        # Setup PDF
-        c = pdf_utils.setup_canvas(output_path, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
+        # Setup both PDFs
+        c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
+        c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
 
         # Phase 1: Collect all items (with custom lookup)
         items = collect_items_from_csv(df, custom_lookup)
@@ -454,26 +467,35 @@ def process_orders():
         large_count = len(items) - small_count
         print(f"  Small items (1 square): {small_count}, Large items (2-3 squares): {large_count}")
 
-        # Phase 2: Optimized layout
-        layout_mgr = layout.OptimizedLayoutManager(c)
+        # Phase 2: Optimized layout (use same layout for both)
+        layout_mgr = layout.OptimizedLayoutManager(c_with_border)
         placed_items = layout_mgr.place_items(items)
 
-        # Phase 3: Render all items, handling page breaks
+        # Phase 3: Render all items to both PDFs, handling page breaks
         # Sort by page number to render items in correct order
         placed_items.sort(key=lambda p: p[2])  # Sort by page number
 
-        current_page = 1
+        current_page_with_border = 1
+        current_page_no_border = 1
         for x, y, page, item in placed_items:
-            # Handle page breaks during rendering
-            while current_page < page:
-                c.showPage()
-                current_page += 1
-            render_item(c, x, y, item)
+            # Handle page breaks for PDF with border
+            while current_page_with_border < page:
+                c_with_border.showPage()
+                current_page_with_border += 1
+            render_item(c_with_border, x, y, item, draw_cutting_border=True)
 
-        # Save PDF
-        c.save()
+            # Handle page breaks for PDF without border
+            while current_page_no_border < page:
+                c_no_border.showPage()
+                current_page_no_border += 1
+            render_item(c_no_border, x, y, item, draw_cutting_border=False)
+
+        # Save both PDFs
+        c_with_border.save()
+        c_no_border.save()
         print(f"  Pages: {layout_mgr.page_count}")
-        print(f"  Saved: {output_path}")
+        print(f"  Saved: {output_path_with_border}")
+        print(f"  Saved: {output_path_no_border}")
 
 if __name__ == "__main__":    
     if not os.path.exists(config.FONT_PATH):
