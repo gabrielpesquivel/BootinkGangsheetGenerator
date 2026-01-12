@@ -1,10 +1,62 @@
 import numpy as np
 from matplotlib.textpath import TextPath
 from matplotlib.font_manager import FontProperties
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, box
 from shapely.ops import unary_union
 from shapely import affinity
 from . import config
+
+
+def add_space_bridges(text, text_shape, font_path, font_size):
+    """
+    Add bridging rectangles at space positions to connect words.
+    This ensures stickers come off in one piece.
+
+    Bridge dimensions: 1.8mm height x 4.8mm width
+    Same style as offset bubble (applied via buffer later).
+    """
+    if ' ' not in text:
+        return text_shape
+
+    # Bridge dimensions in points
+    bridge_height = 1.8 * config.MM_TO_PTS
+    bridge_width = 4.8 * config.MM_TO_PTS
+
+    fp = FontProperties(fname=font_path)
+    minx, miny, maxx, maxy = text_shape.bounds
+    text_center_y = (miny + maxy) / 2
+
+    bridges = []
+
+    # Find space positions by rendering prefix text
+    for i, char in enumerate(text):
+        if char == ' ':
+            # Render text up to this space
+            prefix = text[:i]
+            if not prefix:
+                continue
+            tp = TextPath((0, 0), prefix, size=font_size, prop=fp)
+            verts = tp.vertices
+            if len(verts) == 0:
+                continue
+
+            # Right edge of the prefix is where the space starts
+            space_x = verts[:, 0].max()
+
+            # Create bridge rectangle
+            # x: starts at space_x
+            # y: centered on text
+            bridge_left = space_x
+            bridge_bottom = text_center_y - bridge_height / 2
+            bridge_right = bridge_left + bridge_width
+            bridge_top = bridge_bottom + bridge_height
+
+            bridge = box(bridge_left, bridge_bottom, bridge_right, bridge_top)
+            bridges.append(bridge)
+
+    if bridges:
+        return unary_union([text_shape] + bridges)
+    return text_shape
 
 def text_to_shapely(text, font_path, font_size):
     """Converts a text string into a single united Shapely polygon with proper holes."""
@@ -110,16 +162,19 @@ def create_sticker_geometry(text, font_path, size_config, rect_width, rect_heigh
     # 1. Get Base Text
     text_shape = text_to_shapely(text, font_path, font_size_pts)
 
-    # 2. Create Offset (Background)
+    # 2. Add bridging rectangles at spaces (for single-piece stickers)
+    text_shape = add_space_bridges(text, text_shape, font_path, font_size_pts)
+
+    # 3. Create Offset (Background)
     # join_style=1 (Round), resolution=16 (Smoothness)
     bg_shape = text_shape.buffer(offset_pts, join_style=1, resolution=16)
 
-    # 3. Get bounds of the background
+    # 4. Get bounds of the background
     minx, miny, maxx, maxy = bg_shape.bounds
     bg_width = maxx - minx
     bg_height = maxy - miny
 
-    # 4. Center the text and background within the rectangle
+    # 5. Center the text and background within the rectangle
     # Calculate offset to center both horizontally and vertically
     center_x = (rect_width - bg_width) / 2 - minx
     center_y = (rect_height - bg_height) / 2 - miny
@@ -168,6 +223,10 @@ def create_two_row_sticker_geometry(text, font_path, size_config, rect_width, re
         # Create shapes for each row
         row1_shape = text_to_shapely(row1, font_path, font_size_pts)
         row2_shape = text_to_shapely(row2, font_path, font_size_pts)
+
+        # Add bridging rectangles at spaces for each row
+        row1_shape = add_space_bridges(row1, row1_shape, font_path, font_size_pts)
+        row2_shape = add_space_bridges(row2, row2_shape, font_path, font_size_pts)
 
         # Get bounds of each row
         r1_minx, r1_miny, r1_maxx, r1_maxy = row1_shape.bounds
