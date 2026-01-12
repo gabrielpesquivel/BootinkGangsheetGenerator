@@ -62,7 +62,14 @@ def _build_symbol_lookup():
 SYMBOL_LOOKUP = _build_symbol_lookup()
 
 # Patterns that indicate a custom item needing lookup
-CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER']
+CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER', 'FIRST NAME', 'REQUEST A FLAG']
+
+
+def safe_str(value):
+    """Convert a pandas cell value to string, handling NaN as empty string."""
+    if pd.isna(value):
+        return ''
+    return str(value).strip()
 
 
 def load_custom_lookup(custom_csv_path):
@@ -83,10 +90,10 @@ def load_custom_lookup(custom_csv_path):
     current_lineitem = None
 
     for index, row in df.iterrows():
-        order_num = str(row.get('Name', '')).strip()
-        lineitem_name = str(row.get('Lineitem name', '')).strip()
-        attr_key = str(row.get('Lineitem Attribute Key', '')).strip()
-        attr_value = str(row.get('Lineitem Attribute Value', '')).strip()
+        order_num = safe_str(row.get('Name'))
+        lineitem_name = safe_str(row.get('Lineitem name'))
+        attr_key = safe_str(row.get('Lineitem Attribute Key'))
+        attr_value = safe_str(row.get('Lineitem Attribute Value'))
 
         # Track current order (might be empty in continuation rows)
         if order_num:
@@ -247,18 +254,19 @@ def collect_items_from_csv(df, custom_lookup=None):
     current_order = None
 
     for index, row in df.iterrows():
-        lineitem_name = str(row.get('Lineitem name', ''))
+        lineitem_name = safe_str(row.get('Lineitem name'))
 
         # Track current order number (might be empty in continuation rows)
-        order_num = str(row.get('Name', '')).strip()
+        order_num = safe_str(row.get('Name'))
         if order_num:
             current_order = order_num
 
         # Skip items we don't want to print
-        if not lineitem_name or lineitem_name.strip() == '' or 'Priming Wipe' in lineitem_name:
+        if not lineitem_name or 'Priming Wipe' in lineitem_name:
             continue
 
-        qty = int(row.get('Lineitem quantity', 1))
+        qty_val = row.get('Lineitem quantity')
+        qty = 1 if pd.isna(qty_val) else int(qty_val)
 
         # Check if this is a flag item
         flag_path = get_flag_path(lineitem_name)
@@ -308,7 +316,11 @@ def collect_items_from_csv(df, custom_lookup=None):
         if is_custom_item(lineitem_name) and current_order and custom_lookup:
             custom_text = get_custom_text(current_order, lineitem_name, custom_lookup)
             if custom_text:
-                text = custom_text
+                # For "REQUEST A FLAG" items, append " FLAG" to the custom value
+                if 'REQUEST A FLAG' in lineitem_name.upper():
+                    text = custom_text.upper() + " FLAG"
+                else:
+                    text = custom_text
             else:
                 print(f"Warning: No custom value found for order {current_order}, item '{lineitem_name}'")
 
@@ -322,9 +334,23 @@ def collect_items_from_csv(df, custom_lookup=None):
         rect_width = grid_squares * config.GRID_SIZE
         rect_height = config.GRID_SIZE
 
-        text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
-            text, config.FONT_PATH, size_cfg, rect_width, rect_height
-        )
+        try:
+            text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+                text, config.FONT_PATH, size_cfg, rect_width, rect_height
+            )
+        except Exception as e:
+            # Font doesn't support these characters - render "UNSUPPORTED" instead
+            safe_text = text.encode('ascii', 'replace').decode('ascii')
+            print(f"Warning: Could not render text '{safe_text}' - using UNSUPPORTED placeholder")
+            text = "UNSUPPORTED"
+            size = determine_size_category(text)
+            size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
+            grid_squares = determine_grid_squares(text)
+            rect_width = grid_squares * config.GRID_SIZE
+            rect_height = config.GRID_SIZE
+            text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+                text, config.FONT_PATH, size_cfg, rect_width, rect_height
+            )
 
         for _ in range(qty):
             items.append({
