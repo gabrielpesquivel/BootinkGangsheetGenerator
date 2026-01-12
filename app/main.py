@@ -203,10 +203,10 @@ def get_flag_path(lineitem_name):
 def determine_grid_squares(text):
     """
     Determine how many grid squares (25mm each) the rectangle should span.
-    Based on specs: <=3 chars = 1 square, <=14 chars = 2 squares, >14 chars = 3 squares
+    Based on specs: <=6 chars = 1 square, <=14 chars = 2 squares, >14 chars = 3 squares
     """
     char_count = len(text.strip())
-    if char_count <= 3:
+    if char_count <= 6:
         return 1  # 25mm
     elif char_count <= 14:
         return 2  # 50mm
