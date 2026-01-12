@@ -316,9 +316,10 @@ def collect_items_from_csv(df, custom_lookup=None):
         if is_custom_item(lineitem_name) and current_order and custom_lookup:
             custom_text = get_custom_text(current_order, lineitem_name, custom_lookup)
             if custom_text:
-                # For "REQUEST A FLAG" items, append " FLAG" to the custom value
+                # For "REQUEST A FLAG" items, append " FLAG" to the custom value and use fluro yellow
                 if 'REQUEST A FLAG' in lineitem_name.upper():
                     text = custom_text.upper() + " FLAG"
+                    text_color = 'FLURO_YELLOW'
                 else:
                     text = custom_text
             else:
@@ -389,6 +390,10 @@ def render_item(c, x, y, item):
             # White text with black bubble fill at 3%
             text_cmyk = CMYKColor(0, 0, 0, 0)  # White
             bubble_cmyk = CMYKColor(0, 0, 0, 1)  # Black
+        elif text_color == 'FLURO_YELLOW':
+            # Fluorescent yellow text with white bubble fill at 3%
+            text_cmyk = CMYKColor(0, 0, 1, 0)  # Yellow
+            bubble_cmyk = CMYKColor(0, 0, 0, 0)  # White
         else:
             # Black text with white bubble fill at 3%
             text_cmyk = CMYKColor(0, 0, 0, 1)  # Black
