@@ -18,26 +18,14 @@ ROOT_DIR = SPEC_DIR.parent
 
 block_cipher = None
 
-# Modules to exclude for smaller size
+# Modules to exclude for smaller size (conservative list)
 excluded_modules = [
     # Testing frameworks
-    'pytest', 'py', '_pytest', 'pluggy',
-    'unittest', 'doctest',
+    'pytest', '_pytest', 'pluggy',
     # IPython/Jupyter
     'IPython', 'ipykernel', 'jupyter', 'notebook', 'ipywidgets',
     # Unused scientific packages
-    'scipy', 'matplotlib', 'mpl_toolkits',
-    'sympy', 'statsmodels', 'sklearn', 'skimage',
-    # Database drivers not needed
-    'sqlalchemy', 'psycopg2', 'pymysql',
-    # Unused pandas backends
-    'pandas.tests', 'pandas.io.sql', 'pandas.io.gbq',
-    'pandas.io.stata', 'pandas.io.spss', 'pandas.io.sas',
-    # Unused numpy testing
-    'numpy.testing', 'numpy.distutils', 'numpy.f2py',
-    # Other unused
-    'tkinter.test', 'lib2to3',
-    'pydoc', 'curses',
+    'scipy', 'sympy', 'statsmodels', 'sklearn', 'skimage',
 ]
 
 a = Analysis(
