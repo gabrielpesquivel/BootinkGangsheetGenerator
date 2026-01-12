@@ -13,18 +13,19 @@ import tkinterdnd2
 tkdnd_path = Path(tkinterdnd2.__file__).parent
 
 # Get paths relative to this spec file
-SPEC_DIR = os.path.dirname(os.path.abspath(SPECPATH))
-ROOT_DIR = os.path.dirname(SPEC_DIR)
+# SPECPATH is the directory containing the .spec file (not the file itself)
+SPEC_DIR = Path(SPECPATH).resolve()
+ROOT_DIR = SPEC_DIR.parent
 
 block_cipher = None
 
 a = Analysis(
     ['gui.py'],
-    pathex=[SPEC_DIR],
+    pathex=[str(SPEC_DIR)],
     binaries=[],
     datas=[
         # Include assets folder from root
-        (os.path.join(ROOT_DIR, 'assets'), 'assets'),
+        (str(ROOT_DIR / 'assets'), 'assets'),
         # Include tkinterdnd2 library files
         (str(tkdnd_path), 'tkinterdnd2'),
     ],
@@ -64,7 +65,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='GangSheetGenerator',
+    name='Bootink Sheet Tool',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -77,5 +78,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,  # Add icon path here if you have one: icon='icon.ico'
+    icon=str(ROOT_DIR / 'assets' / 'bootinkLogo.ico'),
 )
