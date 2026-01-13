@@ -12,15 +12,20 @@ def add_space_bridges(text, text_shape, font_path, font_size):
     Add bridging rectangles at space positions to connect words.
     This ensures stickers come off in one piece.
 
-    Bridge dimensions: 1.8mm height x 4.8mm width
-    Same style as offset bubble (applied via buffer later).
+    Bridge dimensions: 1.8mm height x 2.4mm width
+    The bridge itself is invisible (0% opacity) but contributes to
+    the bubble shape, creating a semi-transparent 3% bridge effect.
+
+    Returns:
+        (text_shape, shape_for_bubble): text_shape is unchanged for rendering,
+        shape_for_bubble includes bridges for creating the bubble outline.
     """
     if ' ' not in text:
-        return text_shape
+        return text_shape, text_shape
 
     # Bridge dimensions in points
     bridge_height = 1.8 * config.MM_TO_PTS
-    bridge_width = 4.8 * config.MM_TO_PTS
+    bridge_width = 2.4 * config.MM_TO_PTS
 
     fp = FontProperties(fname=font_path)
     minx, miny, maxx, maxy = text_shape.bounds
@@ -55,8 +60,9 @@ def add_space_bridges(text, text_shape, font_path, font_size):
             bridges.append(bridge)
 
     if bridges:
-        return unary_union([text_shape] + bridges)
-    return text_shape
+        shape_for_bubble = unary_union([text_shape] + bridges)
+        return text_shape, shape_for_bubble
+    return text_shape, text_shape
 
 def text_to_shapely(text, font_path, font_size):
     """Converts a text string into a single united Shapely polygon with proper holes."""
@@ -163,11 +169,14 @@ def create_sticker_geometry(text, font_path, size_config, rect_width, rect_heigh
     text_shape = text_to_shapely(text, font_path, font_size_pts)
 
     # 2. Add bridging rectangles at spaces (for single-piece stickers)
-    text_shape = add_space_bridges(text, text_shape, font_path, font_size_pts)
+    # text_shape remains unchanged for rendering (bridges are invisible)
+    # shape_for_bubble includes bridges to create the bubble outline
+    text_shape, shape_for_bubble = add_space_bridges(text, text_shape, font_path, font_size_pts)
 
-    # 3. Create Offset (Background)
+    # 3. Create Offset (Background) from shape that includes bridges
     # join_style=1 (Round), resolution=16 (Smoothness)
-    bg_shape = text_shape.buffer(offset_pts, join_style=1, resolution=16)
+    # The bubble will span across word gaps via the invisible bridges
+    bg_shape = shape_for_bubble.buffer(offset_pts, join_style=1, resolution=16)
 
     # 4. Get bounds of the background
     minx, miny, maxx, maxy = bg_shape.bounds
@@ -225,8 +234,10 @@ def create_two_row_sticker_geometry(text, font_path, size_config, rect_width, re
         row2_shape = text_to_shapely(row2, font_path, font_size_pts)
 
         # Add bridging rectangles at spaces for each row
-        row1_shape = add_space_bridges(row1, row1_shape, font_path, font_size_pts)
-        row2_shape = add_space_bridges(row2, row2_shape, font_path, font_size_pts)
+        # For two-row stickers, we use the combined shape (with bridges) for both
+        # rendering and bubble since this is a placeholder implementation
+        _, row1_shape = add_space_bridges(row1, row1_shape, font_path, font_size_pts)
+        _, row2_shape = add_space_bridges(row2, row2_shape, font_path, font_size_pts)
 
         # Get bounds of each row
         r1_minx, r1_miny, r1_maxx, r1_maxy = row1_shape.bounds
