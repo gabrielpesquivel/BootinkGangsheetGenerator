@@ -25,7 +25,7 @@ def add_space_bridges(text, text_shape, font_path, font_size):
 
     # Bridge dimensions in points
     bridge_height = 1.0 * config.MM_TO_PTS
-    bridge_width = 3.6 * config.MM_TO_PTS
+    bridge_width = 4.5 * config.MM_TO_PTS
 
     fp = FontProperties(fname=font_path)
     minx, miny, maxx, maxy = text_shape.bounds
