@@ -12,7 +12,7 @@ def add_space_bridges(text, text_shape, font_path, font_size):
     Add bridging rectangles at space positions to connect words.
     This ensures stickers come off in one piece.
 
-    Bridge dimensions: 1mm height x 2.4mm width
+    Bridge dimensions: 1mm height x 3.6mm width
     The bridge itself is invisible (0% opacity) but contributes to
     the bubble shape, creating a semi-transparent 3% bridge effect.
 
@@ -25,7 +25,7 @@ def add_space_bridges(text, text_shape, font_path, font_size):
 
     # Bridge dimensions in points
     bridge_height = 1.0 * config.MM_TO_PTS
-    bridge_width = 2.4 * config.MM_TO_PTS
+    bridge_width = 3.6 * config.MM_TO_PTS
 
     fp = FontProperties(fname=font_path)
     minx, miny, maxx, maxy = text_shape.bounds
