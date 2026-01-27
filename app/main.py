@@ -351,7 +351,9 @@ def collect_items_from_csv(df, custom_lookup=None):
         if is_symbol_item(lineitem_name):
             symbol_path = get_symbol_path(lineitem_name)
             if symbol_path:
-                symbol_height_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS
+                # Check if this is a halo symbol (uses width-based sizing)
+                is_halo = 'HALO' in lineitem_name.upper()
+                symbol_size_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS
 
                 for _ in range(qty):
                     items.append({
@@ -359,7 +361,8 @@ def collect_items_from_csv(df, custom_lookup=None):
                         'width': config.GRID_SIZE,
                         'height': config.GRID_SIZE,
                         'symbol_path': symbol_path,
-                        'symbol_height_pts': symbol_height_pts
+                        'symbol_size_pts': symbol_size_pts,
+                        'use_width_sizing': is_halo  # Halo uses width, others use height
                     })
             else:
                 # Symbol file not found - create error item
@@ -479,10 +482,17 @@ def render_item(c, x, y, item, draw_cutting_border=True):
 
     elif item['type'] == 'symbol':
         # Get symbol dimensions for centering
-        svg_w, svg_h = pdf_utils.get_svg_dimensions(item['symbol_path'], item['symbol_height_pts'])
-        center_x = x + (w - svg_w) / 2
-        center_y = y + (h - svg_h) / 2
-        pdf_utils.draw_svg(c, item['symbol_path'], center_x, center_y, item['symbol_height_pts'])
+        # Halo uses width-based sizing, other symbols use height-based
+        if item.get('use_width_sizing'):
+            svg_w, svg_h = pdf_utils.get_svg_dimensions_by_width(item['symbol_path'], item['symbol_size_pts'])
+            center_x = x + (w - svg_w) / 2
+            center_y = y + (h - svg_h) / 2
+            pdf_utils.draw_svg_by_width(c, item['symbol_path'], center_x, center_y, item['symbol_size_pts'])
+        else:
+            svg_w, svg_h = pdf_utils.get_svg_dimensions(item['symbol_path'], item['symbol_size_pts'])
+            center_x = x + (w - svg_w) / 2
+            center_y = y + (h - svg_h) / 2
+            pdf_utils.draw_svg(c, item['symbol_path'], center_x, center_y, item['symbol_size_pts'])
 
     elif item['type'] == 'sticker':
         # Translate geometry to position
