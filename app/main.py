@@ -170,6 +170,22 @@ def get_symbol_path(lineitem_name):
     return None
 
 
+def is_flag_item(lineitem_name):
+    """Check if lineitem is supposed to be a flag item based on region prefix."""
+    for region in FLAG_REGIONS:
+        if lineitem_name.startswith(f'{region} - '):
+            return True
+    return False
+
+
+def is_symbol_item(lineitem_name):
+    """Check if lineitem is supposed to be a symbol item based on category prefix."""
+    for csv_category in SYMBOL_CATEGORY_MAP.keys():
+        if lineitem_name.startswith(f'{csv_category} - '):
+            return True
+    return False
+
+
 def get_flag_path(lineitem_name):
     """
     Check if lineitem is a flag item and return the flag SVG path.
@@ -239,6 +255,45 @@ def determine_size_category(text):
     return 'Words'
 
 
+def create_error_item(order_num, error_reason):
+    """
+    Create an error item to display on the sheet with the order number in fluro yellow.
+
+    Args:
+        order_num: The order number to display
+        error_reason: Short description of what failed
+
+    Returns:
+        Error item dict or None if geometry creation fails
+    """
+    # Display format: "ORDER# - ERROR"
+    display_text = f"{order_num}"
+
+    size_cfg = config.SIZE_MAP['Words']
+    grid_squares = 1
+    rect_width = grid_squares * config.GRID_SIZE
+    rect_height = config.GRID_SIZE
+
+    try:
+        text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+            display_text, config.FONT_PATH, size_cfg, rect_width, rect_height
+        )
+        return {
+            'type': 'sticker',
+            'width': w,
+            'height': h,
+            'text_geo': text_geo,
+            'bg_geo': bg_geo,
+            'text_color': 'FLURO_YELLOW',
+            'is_error': True,
+            'error_reason': error_reason
+        }
+    except Exception:
+        # If we can't even render the order number, nothing we can do
+        print(f"Critical: Could not create error item for order {order_num}")
+        return None
+
+
 def collect_items_from_csv(df, custom_lookup=None):
     """
     First pass: collect all items from the CSV with their dimensions and render data.
@@ -248,9 +303,11 @@ def collect_items_from_csv(df, custom_lookup=None):
         custom_lookup: Dict mapping (order_number, lineitem_name) -> custom_value
 
     Returns:
-        List of item dicts with 'width', 'height', 'type', and type-specific data
+        List of item dicts with 'width', 'height', 'type', and type-specific data.
+        Error items are appended at the end so they appear at the bottom of the sheet.
     """
     items = []
+    error_items = []  # Track errors separately to place at bottom
     current_order = None
 
     for index, row in df.iterrows():
@@ -269,33 +326,47 @@ def collect_items_from_csv(df, custom_lookup=None):
         qty = 1 if pd.isna(qty_val) else int(qty_val)
 
         # Check if this is a flag item
-        flag_path = get_flag_path(lineitem_name)
-        if flag_path:
-            flag_height_pts = config.SIZE_MAP['Flags']['target_height_mm'] * config.MM_TO_PTS
+        if is_flag_item(lineitem_name):
+            flag_path = get_flag_path(lineitem_name)
+            if flag_path:
+                flag_height_pts = config.SIZE_MAP['Flags']['target_height_mm'] * config.MM_TO_PTS
 
-            for _ in range(qty):
-                items.append({
-                    'type': 'flag',
-                    'width': config.GRID_SIZE,
-                    'height': config.GRID_SIZE,
-                    'flag_path': flag_path,
-                    'flag_height_pts': flag_height_pts
-                })
+                for _ in range(qty):
+                    items.append({
+                        'type': 'flag',
+                        'width': config.GRID_SIZE,
+                        'height': config.GRID_SIZE,
+                        'flag_path': flag_path,
+                        'flag_height_pts': flag_height_pts
+                    })
+            else:
+                # Flag file not found - create error item
+                error_item = create_error_item(current_order, f"Flag not found: {lineitem_name}")
+                if error_item:
+                    for _ in range(qty):
+                        error_items.append(error_item.copy())
             continue
 
         # Check if this is a symbol item
-        symbol_path = get_symbol_path(lineitem_name)
-        if symbol_path:
-            symbol_height_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS
+        if is_symbol_item(lineitem_name):
+            symbol_path = get_symbol_path(lineitem_name)
+            if symbol_path:
+                symbol_height_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS
 
-            for _ in range(qty):
-                items.append({
-                    'type': 'symbol',
-                    'width': config.GRID_SIZE,
-                    'height': config.GRID_SIZE,
-                    'symbol_path': symbol_path,
-                    'symbol_height_pts': symbol_height_pts
-                })
+                for _ in range(qty):
+                    items.append({
+                        'type': 'symbol',
+                        'width': config.GRID_SIZE,
+                        'height': config.GRID_SIZE,
+                        'symbol_path': symbol_path,
+                        'symbol_height_pts': symbol_height_pts
+                    })
+            else:
+                # Symbol file not found - create error item
+                error_item = create_error_item(current_order, f"Symbol not found: {lineitem_name}")
+                if error_item:
+                    for _ in range(qty):
+                        error_items.append(error_item.copy())
             continue
 
         # Extract text and color
@@ -331,6 +402,11 @@ def collect_items_from_csv(df, custom_lookup=None):
                     text = custom_text
             else:
                 print(f"Warning: No custom value found for order {current_order}, item '{lineitem_name}'")
+                error_item = create_error_item(current_order, f"Missing custom value: {lineitem_name}")
+                if error_item:
+                    for _ in range(qty):
+                        error_items.append(error_item.copy())
+                continue
 
         if not text or text.strip() == '':
             continue
@@ -362,9 +438,13 @@ def collect_items_from_csv(df, custom_lookup=None):
                     text, config.FONT_PATH, size_cfg, rect_width, rect_height
                 )
         except Exception as e:
-            # Font doesn't support these characters - skip this item
+            # Font doesn't support these characters - create error item
             safe_text = text.encode('ascii', 'replace').decode('ascii')
-            print(f"Warning: Could not render text '{safe_text}' - skipping item")
+            print(f"Warning: Could not render text '{safe_text}' for order {current_order}")
+            error_item = create_error_item(current_order, f"Cannot render: {safe_text}")
+            if error_item:
+                for _ in range(qty):
+                    error_items.append(error_item.copy())
             continue
 
         for _ in range(qty):
@@ -377,6 +457,8 @@ def collect_items_from_csv(df, custom_lookup=None):
                 'text_color': text_color
             })
 
+    # Append error items at the end so they appear at the bottom of the sheet
+    items.extend(error_items)
     return items
 
 
@@ -485,9 +567,13 @@ def process_orders():
         print(f"  Collected {len(items)} items")
 
         # Count by size for stats
-        small_count = sum(1 for i in items if i['width'] <= config.GRID_SIZE + 0.1)
-        large_count = len(items) - small_count
+        error_count = sum(1 for i in items if i.get('is_error'))
+        normal_items = [i for i in items if not i.get('is_error')]
+        small_count = sum(1 for i in normal_items if i['width'] <= config.GRID_SIZE + 0.1)
+        large_count = len(normal_items) - small_count
         print(f"  Small items (1 square): {small_count}, Large items (2-3 squares): {large_count}")
+        if error_count > 0:
+            print(f"  Error items (fluro yellow): {error_count}")
 
         # Phase 2: Optimized layout (use same layout for both)
         layout_mgr = layout.OptimizedLayoutManager(c_with_border)
