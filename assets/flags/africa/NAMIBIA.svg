@@ -1,62 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 28.66 21.73">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 28.66 21.72">
   <defs>
     <style>
       .cls-1 {
-        stroke: #c8202f;
-        stroke-width: 4.25px;
-      }
-
-      .cls-1, .cls-2, .cls-3, .cls-4 {
-        fill: none;
-      }
-
-      .cls-1, .cls-3, .cls-4 {
-        stroke-miterlimit: 40;
-      }
-
-      .cls-5 {
         fill: #ffce04;
       }
 
-      .cls-3 {
-        stroke: #203569;
-        stroke-width: .28px;
+      .cls-2 {
+        fill: #fff;
       }
 
-      .cls-6 {
-        fill: #079b49;
+      .cls-3 {
+        fill: none;
       }
 
       .cls-4 {
-        stroke: #fff;
-        stroke-width: 5.67px;
+        fill: #c8202f;
       }
 
-      .cls-7 {
+      .cls-5 {
+        fill: #079b49;
+      }
+
+      .cls-6 {
         clip-path: url(#clippath);
       }
 
-      .cls-8 {
+      .cls-7 {
         fill: #203569;
       }
     </style>
     <clipPath id="clippath">
-      <rect class="cls-2" x="1.57" y="2.36" width="25.51" height="17.01"/>
+      <rect class="cls-3" x="1.57" y="2.36" width="25.51" height="17.01"/>
     </clipPath>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
-      <path class="cls-8" d="M1.57,19.37V2.36h25.51L1.57,19.37Z"/>
-      <path class="cls-6" d="M27.08,2.36v17.01H1.57L27.08,2.36Z"/>
-      <g class="cls-7">
+      <path class="cls-7" d="M1.57,19.37V2.36h25.51L1.57,19.37Z"/>
+      <path class="cls-5" d="M27.08,2.36v17.01H1.57L27.08,2.36Z"/>
+      <g class="cls-6">
         <g>
-          <path class="cls-4" d="M1.57,19.37L27.08,2.36"/>
-          <path class="cls-1" d="M1.57,19.37L27.08,2.36"/>
+          <rect class="cls-2" x="-1" y="8.03" width="30.66" height="5.67" transform="translate(-3.62 9.77) rotate(-33.69)"/>
+          <rect class="cls-4" x="-1" y="8.74" width="30.66" height="4.25" transform="translate(-3.62 9.77) rotate(-33.69)"/>
         </g>
       </g>
-      <path class="cls-5" d="M6.67,4.16l.44,1.19.98-.81-.21,1.25,1.25-.21-.81.98,1.19.44-1.19.44.81.98-1.25-.21.21,1.25-.98-.81-.44,1.19-.44-1.19-.98.81.21-1.25-1.25.21.81-.98-1.19-.44,1.19-.44-.81-.98,1.25.21-.21-1.25.98.81.44-1.19Z"/>
-      <circle class="cls-3" cx="6.67" cy="6.99" r="1.56"/>
+      <path class="cls-1" d="M6.67,4.16l.44,1.19.98-.81-.21,1.25,1.25-.21-.81.98,1.19.44-1.19.44.81.98-1.25-.21.21,1.25-.98-.81-.44,1.19-.44-1.19-.98.81.21-1.25-1.25.21.81-.98-1.19-.44,1.19-.44-.81-.98,1.25.21-.21-1.25.98.81.44-1.19Z"/>
+      <path class="cls-7" d="M6.67,8.69c-.94,0-1.7-.76-1.7-1.7s.76-1.7,1.7-1.7,1.7.76,1.7,1.7-.76,1.7-1.7,1.7ZM6.67,5.57c-.78,0-1.42.64-1.42,1.42s.64,1.42,1.42,1.42,1.42-.64,1.42-1.42-.64-1.42-1.42-1.42Z"/>
     </g>
   </g>
 </svg>
