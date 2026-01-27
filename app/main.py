@@ -314,6 +314,7 @@ def collect_items_from_csv(df, custom_lookup=None):
 
         # Check if this is a custom item that needs lookup
         is_custom_flag = False
+        is_custom_initials = False
         if is_custom_item(lineitem_name) and current_order and custom_lookup:
             custom_text = get_custom_text(current_order, lineitem_name, custom_lookup)
             if custom_text:
@@ -322,6 +323,10 @@ def collect_items_from_csv(df, custom_lookup=None):
                     text = custom_text.upper() + " FLAG"
                     text_color = 'FLURO_YELLOW'
                     is_custom_flag = True
+                # Track CUSTOM INITIALS items to force 'Initials' size category
+                elif 'CUSTOM INITIALS' in lineitem_name.upper():
+                    text = custom_text
+                    is_custom_initials = True
                 else:
                     text = custom_text
             else:
@@ -331,7 +336,11 @@ def collect_items_from_csv(df, custom_lookup=None):
             continue
 
         # Determine size and geometry
-        size = determine_size_category(text)
+        # Force 'Initials' category for CUSTOM INITIALS items regardless of text length
+        if is_custom_initials:
+            size = 'Initials'
+        else:
+            size = determine_size_category(text)
         size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
 
         # Custom flags always use 1 grid square with two-row layout
