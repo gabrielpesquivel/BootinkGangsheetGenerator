@@ -12,7 +12,9 @@ def add_space_bridges(text, text_shape, font_path, font_size):
     Add bridging rectangles at space positions to connect words.
     This ensures stickers come off in one piece.
 
-    Bridge dimensions: 1mm height x 3.6mm width
+    Bridge height: 1mm
+    Bridge width: Dynamically calculated to exactly span the gap between words.
+
     The bridge itself is invisible (0% opacity) but contributes to
     the bubble shape, creating a semi-transparent 3% bridge effect.
 
@@ -23,9 +25,8 @@ def add_space_bridges(text, text_shape, font_path, font_size):
     if ' ' not in text:
         return text_shape, text_shape
 
-    # Bridge dimensions in points
+    # Bridge height in points
     bridge_height = 1.0 * config.MM_TO_PTS
-    bridge_width = 4.5 * config.MM_TO_PTS
 
     fp = FontProperties(fname=font_path)
     minx, miny, maxx, maxy = text_shape.bounds
@@ -33,31 +34,78 @@ def add_space_bridges(text, text_shape, font_path, font_size):
 
     bridges = []
 
-    # Find space positions by rendering prefix text
-    for i, char in enumerate(text):
-        if char == ' ':
-            # Render text up to this space
-            prefix = text[:i]
-            if not prefix:
-                continue
-            tp = TextPath((0, 0), prefix, size=font_size, prop=fp)
-            verts = tp.vertices
-            if len(verts) == 0:
-                continue
+    # Split text into words and calculate their positions
+    words = text.split(' ')
+    if len(words) < 2:
+        return text_shape, text_shape
 
-            # Right edge of the prefix is where the space starts
-            space_x = verts[:, 0].max()
+    # Calculate the right edge of each word and left edge of the next
+    current_pos = 0
+    for word_idx, word in enumerate(words[:-1]):  # All words except the last
+        # Calculate position after this word (including the word itself)
+        prefix_end = current_pos + len(word)
 
-            # Create bridge rectangle
-            # x: starts at space_x
-            # y: centered on text
-            bridge_left = space_x
-            bridge_bottom = text_center_y - bridge_height / 2
-            bridge_right = bridge_left + bridge_width
-            bridge_top = bridge_bottom + bridge_height
+        # Render text up to end of current word to get its right edge
+        prefix = text[:prefix_end]
+        tp_prefix = TextPath((0, 0), prefix, size=font_size, prop=fp)
+        verts_prefix = tp_prefix.vertices
+        if len(verts_prefix) == 0:
+            current_pos = prefix_end + 1  # +1 for space
+            continue
+        word_right_edge = verts_prefix[:, 0].max()
 
-            bridge = box(bridge_left, bridge_bottom, bridge_right, bridge_top)
-            bridges.append(bridge)
+        # Find position of next word's first character
+        next_word = words[word_idx + 1]
+        if not next_word:
+            current_pos = prefix_end + 1
+            continue
+
+        # Render text up to and including first char of next word
+        # Position in original text: prefix_end + 1 (space) + 1 (first char) = prefix_end + 2
+        next_word_first_char_pos = prefix_end + 1 + 1  # +1 for space, +1 for first char
+        text_with_next_char = text[:next_word_first_char_pos]
+        tp_with_next = TextPath((0, 0), text_with_next_char, size=font_size, prop=fp)
+        verts_with_next = tp_with_next.vertices
+
+        if len(verts_with_next) == 0:
+            current_pos = prefix_end + 1
+            continue
+
+        # Find where the next word starts by looking for the leftmost point
+        # that is to the right of the current word's right edge
+        # We need to find the left edge of the newly added character
+        next_word_left_edge = None
+
+        # Get all x coordinates from the new render that are beyond the current word
+        new_x_coords = verts_with_next[:, 0]
+        candidates = [x for x in new_x_coords if x > word_right_edge + 0.01]
+
+        if candidates:
+            next_word_left_edge = min(candidates)
+        else:
+            # Fallback: estimate based on font metrics (space is typically ~0.25-0.33 of font size)
+            next_word_left_edge = word_right_edge + (font_size * 0.28)
+
+        # Create bridge spanning exactly from word end to next word start
+        bridge_left = word_right_edge
+        bridge_right = next_word_left_edge
+
+        # Ensure minimum bridge width for stability
+        min_bridge_width = 0.3 * config.MM_TO_PTS
+        if bridge_right - bridge_left < min_bridge_width:
+            # Center a minimum-width bridge in the gap
+            gap_center = (bridge_left + bridge_right) / 2
+            bridge_left = gap_center - min_bridge_width / 2
+            bridge_right = gap_center + min_bridge_width / 2
+
+        bridge_bottom = text_center_y - bridge_height / 2
+        bridge_top = bridge_bottom + bridge_height
+
+        bridge = box(bridge_left, bridge_bottom, bridge_right, bridge_top)
+        bridges.append(bridge)
+
+        # Move to next word position
+        current_pos = prefix_end + 1  # +1 for the space
 
     if bridges:
         shape_for_bubble = unary_union([text_shape] + bridges)
