@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.15 31.19">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.24 28.35">
   <defs>
     <style>
       .cls-1 {
+        fill: #231f20;
+      }
+
+      .cls-2 {
         fill: #fff;
-        stroke: #231f20;
-        stroke-miterlimit: 10;
       }
     </style>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g id="_5e8517d363" data-name="5e8517d363">
-      <path class="cls-1" d="M19.65,7.18v4.95h-6.88c-.21,0-.37.18-.37.4v18.17h-4.65V12.53c0-.22-.17-.4-.37-.4H.5v-4.95h6.88c.21,0,.37-.18.37-.4V.5h4.65v6.28c0,.22.17.4.37.4h6.88Z"/>
+      <g>
+        <path class="cls-2" d="M17.88,6.48v4.53h-6.29c-.19,0-.34.16-.34.36v16.61h-4.25V11.37c0-.2-.15-.36-.34-.36H.37v-4.53h6.29c.19,0,.34-.16.34-.36V.37h4.25v5.75c0,.2.15.36.34.36h6.29Z"/>
+        <path class="cls-1" d="M11.61,28.35h-4.98V11.37H0s0-5.26,0-5.26h6.65l-.02-6.11h4.98v6.11h6.63s0,5.26,0,5.26h-6.66l.03,16.98ZM7.36,27.61h3.52V11.37c0-.4.32-.73.71-.73h5.92v-3.8h-5.92c-.39,0-.71-.33-.71-.73V.73h-3.52v5.38c0,.4-.32.73-.71.73H.73v3.8h5.92c.39,0,.71.33.71.73v16.25Z"/>
+      </g>
     </g>
   </g>
 </svg>
