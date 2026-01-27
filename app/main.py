@@ -351,9 +351,19 @@ def collect_items_from_csv(df, custom_lookup=None):
         if is_symbol_item(lineitem_name):
             symbol_path = get_symbol_path(lineitem_name)
             if symbol_path:
-                # Check if this is a halo symbol (uses width-based sizing)
-                is_halo = 'HALO' in lineitem_name.upper()
-                symbol_size_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS
+                upper_name = lineitem_name.upper()
+
+                # Check if this is a halo symbol (uses width-based sizing at 10mm)
+                is_halo = 'HALO' in upper_name
+
+                # Check if this is a crown or heart (uses 8mm height)
+                is_crown_or_heart = 'CROWN' in upper_name or 'HEART' in upper_name
+
+                # Determine symbol size
+                if is_crown_or_heart:
+                    symbol_size_pts = 8 * config.MM_TO_PTS  # 8mm height for crowns and hearts
+                else:
+                    symbol_size_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS  # 10mm default
 
                 for _ in range(qty):
                     items.append({
