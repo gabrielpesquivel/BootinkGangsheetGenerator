@@ -69,7 +69,11 @@ def safe_str(value):
     """Convert a pandas cell value to string, handling NaN as empty string."""
     if pd.isna(value):
         return ''
-    return str(value).strip()
+    # Normalize whitespace: replace any Unicode whitespace with ASCII space
+    # This ensures consistent bridge detection between words
+    result = str(value).strip()
+    result = re.sub(r'\s', ' ', result)
+    return result
 
 
 def load_custom_lookup(custom_csv_path):

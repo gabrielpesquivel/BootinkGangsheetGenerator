@@ -1,4 +1,5 @@
 import numpy as np
+import re
 from matplotlib.textpath import TextPath
 from matplotlib.font_manager import FontProperties
 from shapely.geometry import Polygon, box
@@ -24,6 +25,10 @@ def add_space_bridges(text, text_shape, font_path, font_size):
         (text_shape, shape_for_bubble): text_shape is unchanged for rendering,
         shape_for_bubble includes bridges for creating the bubble outline.
     """
+    # Normalize whitespace: replace any Unicode whitespace (non-breaking space,
+    # tabs, etc.) with regular ASCII space for consistent bridge detection
+    text = re.sub(r'\s', ' ', text)
+
     if ' ' not in text:
         return text_shape, text_shape
 
