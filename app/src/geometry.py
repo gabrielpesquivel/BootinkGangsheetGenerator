@@ -2,143 +2,208 @@ import numpy as np
 import re
 from matplotlib.textpath import TextPath
 from matplotlib.font_manager import FontProperties
-from shapely.geometry import Polygon, box
+from shapely.geometry import Polygon, box, LineString, MultiPolygon, GeometryCollection
 from shapely.ops import unary_union
 from shapely import affinity
 from . import config
 
 
-def add_space_bridges(text, text_shape, font_path, font_size):
+def _get_right_boundary_points(geometry, y_bottom, y_top, num_samples=50):
     """
-    Add bridging rectangles at space positions to connect words.
-    This ensures stickers come off in one piece.
+    Get points along the right boundary of a geometry within a Y range.
+    Returns list of (x, y) tuples tracing the rightmost edge at each Y level.
+    """
+    points = []
+    minx, _, maxx, _ = geometry.bounds
 
-    Bridge height: 1mm
-    Bridge width: Dynamically calculated to span from the rightmost point of the
-    previous word to the leftmost point of the next word, measured within the
-    bridge's vertical range (at text center height).
+    for i in range(num_samples):
+        y = y_bottom + (y_top - y_bottom) * i / (num_samples - 1)
+        # Create a horizontal line spanning the geometry
+        line = LineString([(minx - 1, y), (maxx + 1, y)])
+        intersection = geometry.intersection(line)
 
-    The bridge itself is invisible (0% opacity) but contributes to
-    the bubble shape, creating a semi-transparent 3% bridge effect.
+        if intersection.is_empty:
+            continue
+
+        # Find the rightmost x coordinate from the intersection
+        max_x = None
+        if hasattr(intersection, 'geoms'):
+            # MultiLineString - find rightmost point across all segments
+            for seg in intersection.geoms:
+                if hasattr(seg, 'coords'):
+                    for coord in seg.coords:
+                        if max_x is None or coord[0] > max_x:
+                            max_x = coord[0]
+        elif hasattr(intersection, 'coords'):
+            # Single LineString or Point
+            for coord in intersection.coords:
+                if max_x is None or coord[0] > max_x:
+                    max_x = coord[0]
+
+        if max_x is not None:
+            points.append((max_x, y))
+
+    return points
+
+
+def _get_left_boundary_points(geometry, y_bottom, y_top, num_samples=50):
+    """
+    Get points along the left boundary of a geometry within a Y range.
+    Returns list of (x, y) tuples tracing the leftmost edge at each Y level.
+    """
+    points = []
+    minx, _, maxx, _ = geometry.bounds
+
+    for i in range(num_samples):
+        y = y_bottom + (y_top - y_bottom) * i / (num_samples - 1)
+        # Create a horizontal line spanning the geometry
+        line = LineString([(minx - 1, y), (maxx + 1, y)])
+        intersection = geometry.intersection(line)
+
+        if intersection.is_empty:
+            continue
+
+        # Find the leftmost x coordinate from the intersection
+        min_x = None
+        if hasattr(intersection, 'geoms'):
+            # MultiLineString - find leftmost point across all segments
+            for seg in intersection.geoms:
+                if hasattr(seg, 'coords'):
+                    for coord in seg.coords:
+                        if min_x is None or coord[0] < min_x:
+                            min_x = coord[0]
+        elif hasattr(intersection, 'coords'):
+            # Single LineString or Point
+            for coord in intersection.coords:
+                if min_x is None or coord[0] < min_x:
+                    min_x = coord[0]
+
+        if min_x is not None:
+            points.append((min_x, y))
+
+    return points
+
+
+def _get_geometry_components(geometry):
+    """Extract individual polygon components from any geometry type."""
+    components = []
+    if isinstance(geometry, MultiPolygon):
+        components = list(geometry.geoms)
+    elif isinstance(geometry, GeometryCollection):
+        for geom in geometry.geoms:
+            if isinstance(geom, Polygon) and not geom.is_empty:
+                components.append(geom)
+            elif isinstance(geom, MultiPolygon):
+                components.extend(geom.geoms)
+    elif isinstance(geometry, Polygon) and not geometry.is_empty:
+        components = [geometry]
+    return components
+
+
+def add_full_width_bridge(text, text_shape, font_path, font_size):
+    """
+    Create a bridge spanning from the leftmost to rightmost character.
+    The bridge follows the contours of the letters to avoid overhang.
+
+    Bridge height: 1mm, centered vertically on text
+    Left edge: Follows the right contour of the leftmost character
+    Right edge: Follows the left contour of the rightmost character
+    Middle: Solid fill between the two edges
 
     Returns:
         (text_shape, shape_for_bubble): text_shape is unchanged for rendering,
-        shape_for_bubble includes bridges for creating the bubble outline.
+        shape_for_bubble includes the bridge for creating the bubble outline.
     """
-    # Normalize whitespace: replace any Unicode whitespace (non-breaking space,
-    # tabs, etc.) with regular ASCII space for consistent bridge detection
-    text = re.sub(r'\s', ' ', text)
+    # Strip whitespace for character count check
+    stripped_text = text.strip()
 
-    if ' ' not in text:
+    # Skip single character text - no bridge needed
+    if len(stripped_text) < 2:
         return text_shape, text_shape
 
     # Bridge height in points
     bridge_height = 1.0 * config.MM_TO_PTS
 
-    fp = FontProperties(fname=font_path)
     minx, miny, maxx, maxy = text_shape.bounds
     text_center_y = (miny + maxy) / 2
 
-    # Define the vertical range for bridge connections
+    # Define the vertical range for bridge
     bridge_bottom = text_center_y - bridge_height / 2
     bridge_top = bridge_bottom + bridge_height
 
-    bridges = []
+    # Create the 1mm band spanning full text width
+    band = box(minx - 1, bridge_bottom, maxx + 1, bridge_top)
 
-    # Split text into words and calculate their positions
-    words = text.split(' ')
-    if len(words) < 2:
+    # Get text geometry within the band
+    text_in_band = text_shape.intersection(band)
+
+    if text_in_band.is_empty:
         return text_shape, text_shape
 
-    # Calculate the right edge of each word and left edge of the next
-    current_pos = 0
-    for word_idx, word in enumerate(words[:-1]):  # All words except the last
-        # Calculate position after this word (including the word itself)
-        prefix_end = current_pos + len(word)
+    # Get all polygon components from the intersection
+    components = _get_geometry_components(text_in_band)
 
-        # Render text up to end of current word to get its right edge
-        prefix = text[:prefix_end]
-        tp_prefix = TextPath((0, 0), prefix, size=font_size, prop=fp)
-        verts_prefix = tp_prefix.vertices
-        if len(verts_prefix) == 0:
-            current_pos = prefix_end + 1  # +1 for space
-            continue
+    if not components:
+        return text_shape, text_shape
 
-        # Find the rightmost x coordinate WITHIN the bridge's vertical range
-        # This ensures we connect to the body of letters like J, not just the top hook
-        word_right_edge = None
-        for i in range(len(verts_prefix)):
-            x, y = verts_prefix[i]
-            # Check if this point is within or near the bridge's vertical range
-            # Use a tolerance to catch points close to the bridge level
-            tolerance = bridge_height * 0.5
-            if bridge_bottom - tolerance <= y <= bridge_top + tolerance:
-                if word_right_edge is None or x > word_right_edge:
-                    word_right_edge = x
+    # Sort components by their leftmost x coordinate
+    components.sort(key=lambda c: c.bounds[0])
 
-        # Fallback to global max if no points found in vertical range
-        if word_right_edge is None:
-            word_right_edge = verts_prefix[:, 0].max()
+    # Get leftmost and rightmost components
+    leftmost_component = components[0]
+    rightmost_component = components[-1]
 
-        # Find position of next word's first character
-        next_word = words[word_idx + 1]
-        if not next_word:
-            current_pos = prefix_end + 1
-            continue
+    # If there's only one component (single character in band), no bridge needed
+    if len(components) == 1:
+        # Check if this single component spans multiple characters by comparing
+        # its width to what we'd expect from a single character
+        comp_width = leftmost_component.bounds[2] - leftmost_component.bounds[0]
+        text_width = maxx - minx
+        # If the component is less than 80% of total width, there might be gaps
+        # we need to fill, but with only one component, we can't determine edges
+        # In this case, the text likely has no gaps in the bridge band
+        return text_shape, text_shape
 
-        # Render text up to and including first char of next word
-        next_word_first_char_pos = prefix_end + 1 + 1  # +1 for space, +1 for first char
-        text_with_next_char = text[:next_word_first_char_pos]
-        tp_with_next = TextPath((0, 0), text_with_next_char, size=font_size, prop=fp)
-        verts_with_next = tp_with_next.vertices
+    # Get the right boundary of the leftmost character (where bridge starts)
+    right_boundary = _get_right_boundary_points(leftmost_component, bridge_bottom, bridge_top)
 
-        if len(verts_with_next) == 0:
-            current_pos = prefix_end + 1
-            continue
+    # Get the left boundary of the rightmost character (where bridge ends)
+    left_boundary = _get_left_boundary_points(rightmost_component, bridge_bottom, bridge_top)
 
-        # Find the leftmost x coordinate of the next character WITHIN the bridge's vertical range
-        # This ensures we connect to the body of letters like L, not just the bottom foot
-        next_word_left_edge = None
-        tolerance = bridge_height * 0.5
-        for i in range(len(verts_with_next)):
-            x, y = verts_with_next[i]
-            # Only consider points that are:
-            # 1. Beyond the current word's right edge (part of the new character)
-            # 2. Within the bridge's vertical range
-            if x > word_right_edge + 0.01 and bridge_bottom - tolerance <= y <= bridge_top + tolerance:
-                if next_word_left_edge is None or x < next_word_left_edge:
-                    next_word_left_edge = x
+    if not right_boundary or not left_boundary:
+        return text_shape, text_shape
 
-        # Fallback: if no points in vertical range, use global minimum beyond word edge
-        if next_word_left_edge is None:
-            candidates = [verts_with_next[i, 0] for i in range(len(verts_with_next))
-                         if verts_with_next[i, 0] > word_right_edge + 0.01]
-            if candidates:
-                next_word_left_edge = min(candidates)
-            else:
-                # Last resort fallback
-                next_word_left_edge = word_right_edge + (font_size * 0.28)
+    # Check if the bridge would have negative width (characters overlap or touch)
+    # Compare the rightmost point of left char with leftmost point of right char
+    right_edge_x = max(pt[0] for pt in right_boundary)
+    left_edge_x = min(pt[0] for pt in left_boundary)
 
-        # Create bridge spanning from word body to next word body
-        bridge_left = word_right_edge
-        bridge_right = next_word_left_edge
-
-        # Ensure minimum bridge width for stability
-        min_bridge_width = 0.3 * config.MM_TO_PTS
-        if bridge_right - bridge_left < min_bridge_width:
-            gap_center = (bridge_left + bridge_right) / 2
-            bridge_left = gap_center - min_bridge_width / 2
-            bridge_right = gap_center + min_bridge_width / 2
-
-        bridge = box(bridge_left, bridge_bottom, bridge_right, bridge_top)
-        bridges.append(bridge)
-
-        # Move to next word position
-        current_pos = prefix_end + 1  # +1 for the space
-
-    if bridges:
-        shape_for_bubble = unary_union([text_shape] + bridges)
+    if right_edge_x >= left_edge_x:
+        # Characters touch or overlap in the bridge band - no bridge needed
+        # But we should still fill any gaps between middle characters
+        # Union all components to create the shape_for_bubble
+        shape_for_bubble = unary_union([text_shape] + components)
         return text_shape, shape_for_bubble
+
+    # Create bridge polygon: right boundary going up, then left boundary going down
+    # This creates a polygon that follows the contours of both edge characters
+    bridge_coords = right_boundary + list(reversed(left_boundary))
+
+    # Ensure we have enough points for a valid polygon
+    if len(bridge_coords) < 3:
+        return text_shape, text_shape
+
+    try:
+        bridge = Polygon(bridge_coords)
+        if not bridge.is_valid:
+            bridge = bridge.buffer(0)  # Fix self-intersections
+
+        if bridge.is_valid and not bridge.is_empty:
+            shape_for_bubble = unary_union([text_shape, bridge])
+            return text_shape, shape_for_bubble
+    except Exception:
+        pass
+
     return text_shape, text_shape
 
 def text_to_shapely(text, font_path, font_size):
@@ -245,10 +310,10 @@ def create_sticker_geometry(text, font_path, size_config, rect_width, rect_heigh
     # 1. Get Base Text
     text_shape = text_to_shapely(text, font_path, font_size_pts)
 
-    # 2. Add bridging rectangles at spaces (for single-piece stickers)
-    # text_shape remains unchanged for rendering (bridges are invisible)
-    # shape_for_bubble includes bridges to create the bubble outline
-    text_shape, shape_for_bubble = add_space_bridges(text, text_shape, font_path, font_size_pts)
+    # 2. Add full-width bridge (for single-piece stickers)
+    # text_shape remains unchanged for rendering (bridge is invisible)
+    # shape_for_bubble includes the bridge to create the bubble outline
+    text_shape, shape_for_bubble = add_full_width_bridge(text, text_shape, font_path, font_size_pts)
 
     # 3. Create Offset (Background) from shape that includes bridges
     # join_style=1 (Round), resolution=16 (Smoothness)
@@ -307,14 +372,10 @@ def create_two_row_sticker_geometry(text, font_path, size_config, rect_width, re
         line_spacing = font_size_pts * 0.3  # Space between rows
 
         # Create shapes for each row
+        # Note: Custom flags (two-row stickers) do not use the full-width bridge
+        # as they are a placeholder implementation
         row1_shape = text_to_shapely(row1, font_path, font_size_pts)
         row2_shape = text_to_shapely(row2, font_path, font_size_pts)
-
-        # Add bridging rectangles at spaces for each row
-        # For two-row stickers, we use the combined shape (with bridges) for both
-        # rendering and bubble since this is a placeholder implementation
-        _, row1_shape = add_space_bridges(row1, row1_shape, font_path, font_size_pts)
-        _, row2_shape = add_space_bridges(row2, row2_shape, font_path, font_size_pts)
 
         # Get bounds of each row
         r1_minx, r1_miny, r1_maxx, r1_maxy = row1_shape.bounds

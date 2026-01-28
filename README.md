@@ -214,11 +214,35 @@ SIZE_MAP = {
 
 ### Bridge System
 
-Multi-word stickers use invisible bridges to connect words:
-- **Purpose:** Ensures stickers peel off as one piece
-- **Height:** 1mm centered on text
-- **Width:** Dynamically calculated from word edges
-- **Visibility:** 0% opacity (only affects bubble outline at 3%)
+Text stickers use an invisible full-width bridge to ensure they peel off as one piece:
+
+- **Purpose:** Connects all characters so the sticker peels as a single unit
+- **Height:** 1mm, centered vertically on the text
+- **Coverage:** Spans from the leftmost character to the rightmost character
+- **Contour-Following:** The bridge follows the actual letter shapes to avoid visual overhang
+  - Left edge follows the **right contour** of the leftmost character
+  - Right edge follows the **left contour** of the rightmost character
+  - Everything in between is filled solid
+- **Visibility:** 0% opacity (invisible, but contributes to the 3% bubble outline)
+
+**How it works:**
+
+For text like "HELLO WORLD", the bridge creates a 1mm tall band at the vertical center of the text. Within this band:
+1. The left edge aligns with where the "H" actually exists at each Y-level (not its bounding box)
+2. The right edge aligns with where the "D" actually exists at each Y-level
+3. All gaps between characters (including spaces) are filled
+
+This prevents overhang on letters like "Y" or "T" where the arms/crossbar extend beyond the stem - the bridge only extends to where the letter exists at the bridge's vertical position.
+
+**Applies to:**
+- All text items with 2+ characters (Words, Initials)
+- Text with spaces (e.g., "HELLO WORLD")
+- Text with punctuation (e.g., "A.B")
+
+**Does not apply to:**
+- Single characters (no bridge needed)
+- SVG assets (flags, symbols)
+- Custom flags (two-row placeholder layout)
 
 ### Output Files
 
