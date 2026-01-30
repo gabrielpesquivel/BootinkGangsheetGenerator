@@ -261,11 +261,7 @@ def determine_size_category(text):
         return 'Initials'
 
     # For words (3+ characters), check content-based conditions
-    # Priority by largest target_height_mm: Q/Accents (5mm) > Slashes/Commas (4.8mm) > Words (4mm)
-
-    # Check for Q (5mm)
-    if 'Q' in text or 'q' in text:
-        return 'ContainsQ'
+    # Priority by largest target_height_mm: Accents (5mm) > Slashes/Commas (4.8mm) > Q (4.217mm) > Words (4mm)
 
     # Check for accented characters (5mm)
     # Accents are characters outside basic ASCII that are letters
@@ -280,6 +276,10 @@ def determine_size_category(text):
     # Check for commas (4.8mm)
     if ',' in text:
         return 'ContainsCommas'
+
+    # Check for Q (4.217mm)
+    if 'Q' in text or 'q' in text:
+        return 'ContainsQ'
 
     # Default: regular words (4mm)
     return 'Words'
