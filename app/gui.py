@@ -349,7 +349,8 @@ class App(TkinterDnDCustomTk):
             try:
                 self.msg_queue.put(('status', "Loading custom values..."))
                 custom_lookup = pipeline.load_custom_lookup(self.custom_file)
-                self.msg_queue.put(('status', f"Loaded {len(custom_lookup)} custom values"))
+                total_values = sum(len(v) for v in custom_lookup.values())
+                self.msg_queue.put(('status', f"Loaded {total_values} custom values"))
             except Exception as e:
                 self.msg_queue.put(('status', f"Warning: Could not load custom CSV: {e}"))
 

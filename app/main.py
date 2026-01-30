@@ -86,7 +86,8 @@ def load_custom_lookup(custom_csv_path):
     - Attribute row (following): Lineitem Attribute Key = "CUSTOM INITIALS", Value = "HÅ"
 
     Returns:
-        Dict mapping (order_number, lineitem_name) -> custom_value
+        Dict mapping (order_number, lineitem_name) -> list of custom_values
+        (list allows multiple items with same name in same order to have different values)
     """
     lookup = {}
     # Use utf-8-sig to handle BOM and preserve accented characters
@@ -109,9 +110,12 @@ def load_custom_lookup(custom_csv_path):
         if lineitem_name:
             current_lineitem = lineitem_name
 
-        # If this row has attribute key/value, create the lookup entry
+        # If this row has attribute key/value, append to the lookup list
         if attr_key and attr_value and current_order and current_lineitem:
-            lookup[(current_order, current_lineitem)] = attr_value
+            key = (current_order, current_lineitem)
+            if key not in lookup:
+                lookup[key] = []
+            lookup[key].append(attr_value)
 
     return lookup
 
@@ -125,12 +129,17 @@ def is_custom_item(lineitem_name):
 def get_custom_text(order_num, lineitem_name, custom_lookup):
     """
     Look up the actual custom text for a custom item.
+    Pops from the list so each call gets the next unique value.
 
-    Returns the custom text if found, or None if not found.
+    Returns the custom text if found, or None if not found/exhausted.
     """
     if not custom_lookup:
         return None
-    return custom_lookup.get((order_num, lineitem_name))
+    key = (order_num, lineitem_name)
+    values = custom_lookup.get(key)
+    if values and len(values) > 0:
+        return values.pop(0)  # Return and remove first value
+    return None
 
 
 def get_symbol_path(lineitem_name):
@@ -588,8 +597,15 @@ def process_orders():
             custom_path = os.path.join(config.CUSTOM_DIR, custom_file)
             print(f"Loading custom values from {custom_file}...")
             file_lookup = load_custom_lookup(custom_path)
-            custom_lookup.update(file_lookup)
-            print(f"  Loaded {len(file_lookup)} custom values")
+            # Merge lists properly (extend existing lists rather than overwrite)
+            for key, values in file_lookup.items():
+                if key in custom_lookup:
+                    custom_lookup[key].extend(values)
+                else:
+                    custom_lookup[key] = values
+            # Count total values across all lists
+            total_values = sum(len(v) for v in file_lookup.values())
+            print(f"  Loaded {total_values} custom values")
 
     if not custom_lookup:
         print("Warning: No custom CSV files found in input_csv/custom/ - custom items will use placeholder text")
