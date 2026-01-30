@@ -1,4 +1,5 @@
 import os
+import unicodedata
 import pandas as pd
 from shapely import affinity
 from reportlab.lib.colors import CMYKColor
@@ -238,8 +239,12 @@ def determine_size_category(text):
     Determine size category based on text content according to asset_specs.md:
     - Flags: 6mm
     - Symbols: 10mm
-    - Initials + Numbers: 5mm (1-2 characters)
-    - Dates + Words over 3 characters: 4mm
+    - Initials + Numbers: 4.5mm (1-2 characters)
+    - Words with Q or accents: 5mm
+    - Words with slashes or commas: 4.8mm
+    - Other words: 4mm
+
+    For words, prioritizes largest target height if multiple conditions match.
     """
     text = text.strip()
 
@@ -255,7 +260,28 @@ def determine_size_category(text):
     if len(text) <= 2 and text.replace(' ', '').isalnum():
         return 'Initials'
 
-    # Everything else (dates, words over 3 characters)
+    # For words (3+ characters), check content-based conditions
+    # Priority by largest target_height_mm: Q/Accents (5mm) > Slashes/Commas (4.8mm) > Words (4mm)
+
+    # Check for Q (5mm)
+    if 'Q' in text or 'q' in text:
+        return 'ContainsQ'
+
+    # Check for accented characters (5mm)
+    # Accents are characters outside basic ASCII that are letters
+    for char in text:
+        if ord(char) > 127 and unicodedata.category(char).startswith('L'):
+            return 'ContainsAccents'
+
+    # Check for slashes (4.8mm)
+    if '/' in text or '\\' in text:
+        return 'ContainsSlashes'
+
+    # Check for commas (4.8mm)
+    if ',' in text:
+        return 'ContainsCommas'
+
+    # Default: regular words (4mm)
     return 'Words'
 
 

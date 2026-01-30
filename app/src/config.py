@@ -24,6 +24,10 @@ GRID_SIZE = 25 * MM_TO_PTS  # One grid square = 25mm
 # All have 0.35mm offset outline for peeling bubble (0.7mm total)
 SIZE_MAP = {
     'Words': {'font_size': 5.714 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 4},    # 5.7mm font renders 4mm text height
+    'ContainsQ': {'font_size': 7.71425 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 5}, # If text contains 'Q': 5mm
+    'ContainsAccents': {'font_size': 7.71425 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 5}, # If text contains accents: 5mm
+    'ContainsSlashes': {'font_size': 6.8568 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 4.8}, # If text contains slashes: 4.8mm
+    'ContainsCommas': {'font_size': 6.8568 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 4.8}, # If text contains commas: 4.8mm
     'Initials': {'font_size': 6.428 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 4.5},    # Initials + Numbers: 4.5mm
     'Flags': {'font_size': 6 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 6},       # Flags: 6mm
     'Symbols': {'font_size': 10 * MM_TO_PTS, 'offset_mm': 0.35, 'target_height_mm': 10}    # Symbols: 10mm
