@@ -227,7 +227,7 @@ def determine_grid_squares(text):
     Based on specs: <=6 chars = 1 square, <=14 chars = 2 squares, >14 chars = 3 squares
     """
     char_count = len(text.strip())
-    if char_count <= 6:
+    if char_count <= 5:
         return 1  # 25mm
     elif char_count <= 14:
         return 2  # 50mm
