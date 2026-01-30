@@ -89,7 +89,8 @@ def load_custom_lookup(custom_csv_path):
         Dict mapping (order_number, lineitem_name) -> custom_value
     """
     lookup = {}
-    df = pd.read_csv(custom_csv_path)
+    # Use utf-8-sig to handle BOM and preserve accented characters
+    df = pd.read_csv(custom_csv_path, encoding='utf-8-sig')
 
     current_order = None
     current_lineitem = None
@@ -603,8 +604,8 @@ def process_orders():
         output_path_with_border = os.path.join(config.OUTPUT_DIR, output_filename_with_border)
         output_path_no_border = os.path.join(config.OUTPUT_DIR, output_filename_no_border)
 
-        # Load Data
-        df = pd.read_csv(input_path)
+        # Load Data (utf-8-sig preserves accented characters)
+        df = pd.read_csv(input_path, encoding='utf-8-sig')
 
         # Setup both PDFs
         c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))

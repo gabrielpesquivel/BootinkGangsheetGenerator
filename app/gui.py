@@ -387,8 +387,8 @@ class App(TkinterDnDCustomTk):
         output_path_with_border = os.path.join(order_folder, 'gangsheet.pdf')
         output_path_no_border = os.path.join(order_folder, 'gangsheet_no_border.pdf')
 
-        # Load data
-        df = pd.read_csv(csv_path)
+        # Load data (utf-8-sig preserves accented characters)
+        df = pd.read_csv(csv_path, encoding='utf-8-sig')
 
         # Setup both PDFs
         c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
