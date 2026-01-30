@@ -308,10 +308,9 @@ def collect_items_from_csv(df, custom_lookup=None):
 
     Returns:
         List of item dicts with 'width', 'height', 'type', and type-specific data.
-        Error items are appended at the end so they appear at the bottom of the sheet.
+        Items are returned in order, with error items (yellow order numbers) in place.
     """
     items = []
-    error_items = []  # Track errors separately to place at bottom
     current_order = None
 
     for index, row in df.iterrows():
@@ -344,11 +343,11 @@ def collect_items_from_csv(df, custom_lookup=None):
                         'flag_height_pts': flag_height_pts
                     })
             else:
-                # Flag file not found - create error item
+                # Flag file not found - create error item in place
                 error_item = create_error_item(current_order, f"Flag not found: {lineitem_name}")
                 if error_item:
                     for _ in range(qty):
-                        error_items.append(error_item.copy())
+                        items.append(error_item.copy())
             continue
 
         # Check if this is a symbol item
@@ -379,11 +378,11 @@ def collect_items_from_csv(df, custom_lookup=None):
                         'use_width_sizing': is_halo  # Halo uses width, others use height
                     })
             else:
-                # Symbol file not found - create error item
+                # Symbol file not found - create error item in place
                 error_item = create_error_item(current_order, f"Symbol not found: {lineitem_name}")
                 if error_item:
                     for _ in range(qty):
-                        error_items.append(error_item.copy())
+                        items.append(error_item.copy())
             continue
 
         # Extract text and color
@@ -419,10 +418,11 @@ def collect_items_from_csv(df, custom_lookup=None):
                     text = custom_text
             else:
                 print(f"Warning: No custom value found for order {current_order}, item '{lineitem_name}'")
+                # Create error item in place to maintain order
                 error_item = create_error_item(current_order, f"Missing custom value: {lineitem_name}")
                 if error_item:
                     for _ in range(qty):
-                        error_items.append(error_item.copy())
+                        items.append(error_item.copy())
                 continue
 
         if not text or text.strip() == '':
@@ -455,13 +455,13 @@ def collect_items_from_csv(df, custom_lookup=None):
                     text, config.FONT_PATH, size_cfg, rect_width, rect_height
                 )
         except Exception as e:
-            # Font doesn't support these characters - create error item
+            # Font doesn't support these characters - create error item in place
             safe_text = text.encode('ascii', 'replace').decode('ascii')
             print(f"Warning: Could not render text '{safe_text}' for order {current_order}")
             error_item = create_error_item(current_order, f"Cannot render: {safe_text}")
             if error_item:
                 for _ in range(qty):
-                    error_items.append(error_item.copy())
+                    items.append(error_item.copy())
             continue
 
         for _ in range(qty):
@@ -474,8 +474,6 @@ def collect_items_from_csv(df, custom_lookup=None):
                 'text_color': text_color
             })
 
-    # Append error items at the end so they appear at the bottom of the sheet
-    items.extend(error_items)
     return items
 
 

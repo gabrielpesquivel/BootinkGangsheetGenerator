@@ -99,7 +99,7 @@ class OptimizedLayoutManager:
 
     def place_items(self, items):
         """
-        Place all items optimally.
+        Place all items in order (no optimization/reordering).
 
         Args:
             items: List of dicts with 'width', 'height', and 'render_fn'
@@ -111,61 +111,27 @@ class OptimizedLayoutManager:
         if not items:
             return []
 
-        # Separate items by size: large (2-3 squares) vs small (1 square)
-        small_items = []  # 1 grid square (25mm)
-        large_items = []  # 2-3 grid squares (50mm, 75mm)
-
-        for item in items:
-            if item['width'] <= config.GRID_SIZE + 0.1:  # 1 square (with tolerance)
-                small_items.append(item)
-            else:
-                large_items.append(item)
-
-        # Sort large items by width descending (First-Fit Decreasing)
-        large_items.sort(key=lambda x: x['width'], reverse=True)
-
         placed = []
 
-        # Phase 1: Place large items, tracking gaps
-        for item in large_items:
+        # Place items in order, row by row
+        for item in items:
             w, h = item['width'], item['height']
 
-            # Try to find existing row with space
-            row = self._find_gap_in_rows(w, h)
+            # Check if item fits in current row
+            current_row = self.rows[-1] if self.rows else None
 
-            if row is None:
+            if current_row is None or current_row['remaining'] < w:
                 # Need new row
-                row = self._start_new_row(h)
+                current_row = self._start_new_row(h)
 
             # Calculate x position (after existing items in row)
-            x = config.MARGIN + (self.usable_width - row['remaining'])
-            y = row['y'] - h
+            x = config.MARGIN + (self.usable_width - current_row['remaining'])
+            y = current_row['y'] - h
 
             # Update row tracking
-            row['remaining'] -= w
-            row['items'].append((x, w))
+            current_row['remaining'] -= w
+            current_row['items'].append((x, w))
 
-            placed.append((x, y, row['page'], item))
-
-        # Phase 2: Fill gaps with small items
-        for item in small_items:
-            w, h = item['width'], item['height']
-
-            # Try to find existing row with space
-            row = self._find_gap_in_rows(w, h)
-
-            if row is None:
-                # Need new row
-                row = self._start_new_row(h)
-
-            # Calculate x position
-            x = config.MARGIN + (self.usable_width - row['remaining'])
-            y = row['y'] - h
-
-            # Update row tracking
-            row['remaining'] -= w
-            row['items'].append((x, w))
-
-            placed.append((x, y, row['page'], item))
+            placed.append((x, y, current_row['page'], item))
 
         return placed
