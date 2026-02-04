@@ -8,16 +8,20 @@
 
       .cls-2 {
         fill: #010101;
-        stroke: #203569;
-        stroke-miterlimit: 400;
-        stroke-width: 4.64px;
+      }
+
+      .cls-3 {
+        fill: #203569;
       }
     </style>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
-      <rect class="cls-1" width="27.83" height="17.01"/>
-      <path class="cls-2" d="M0,8.5h27.83M10.05,0v17.01"/>
+      <rect class="cls-1" x="0" y="0" width="27.83" height="17.01"/>
+      <g>
+        <path class="cls-2" d="M0,8.5h27.83M10.05,0v17.01"/>
+        <polygon class="cls-3" points="12.37 17.01 7.73 17.01 7.73 10.82 0 10.82 0 6.18 7.73 6.18 7.73 0 12.37 0 12.37 6.18 27.83 6.18 27.83 10.82 12.37 10.82 12.37 17.01"/>
+      </g>
     </g>
   </g>
 </svg>

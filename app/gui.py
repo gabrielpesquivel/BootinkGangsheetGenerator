@@ -349,7 +349,8 @@ class App(TkinterDnDCustomTk):
             try:
                 self.msg_queue.put(('status', "Loading custom values..."))
                 custom_lookup = pipeline.load_custom_lookup(self.custom_file)
-                self.msg_queue.put(('status', f"Loaded {len(custom_lookup)} custom values"))
+                total_values = sum(len(v) for v in custom_lookup.values())
+                self.msg_queue.put(('status', f"Loaded {total_values} custom values"))
             except Exception as e:
                 self.msg_queue.put(('status', f"Warning: Could not load custom CSV: {e}"))
 
@@ -387,8 +388,8 @@ class App(TkinterDnDCustomTk):
         output_path_with_border = os.path.join(order_folder, 'gangsheet.pdf')
         output_path_no_border = os.path.join(order_folder, 'gangsheet_no_border.pdf')
 
-        # Load data
-        df = pd.read_csv(csv_path)
+        # Load data (utf-8-sig preserves accented characters)
+        df = pd.read_csv(csv_path, encoding='utf-8-sig')
 
         # Setup both PDFs
         c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))

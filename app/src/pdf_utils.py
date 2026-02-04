@@ -24,6 +24,28 @@ def get_svg_dimensions(svg_path, target_height_pts):
 
     return original_width * scale, original_height * scale
 
+
+def get_svg_dimensions_by_width(svg_path, target_width_pts):
+    """
+    Get the dimensions of an SVG when scaled to a target width.
+
+    Args:
+        svg_path: Path to the SVG file
+        target_width_pts: Target width in points
+
+    Returns:
+        (width, height) of the scaled SVG in points
+    """
+    drawing = svg2rlg(svg_path)
+    if drawing is None:
+        return 0, 0
+
+    original_height = drawing.height
+    original_width = drawing.width
+    scale = target_width_pts / original_width
+
+    return original_width * scale, original_height * scale
+
 def setup_canvas(output_path, page_size):
     c = canvas.Canvas(output_path, pagesize=page_size)
     return c
@@ -67,6 +89,40 @@ def draw_svg(c, svg_path, x, y, target_height_pts):
     original_height = drawing.height
     original_width = drawing.width
     scale = target_height_pts / original_height
+
+    # Scale the drawing
+    drawing.width = original_width * scale
+    drawing.height = original_height * scale
+    drawing.scale(scale, scale)
+
+    # Render onto canvas
+    renderPDF.draw(drawing, c, x, y)
+
+    return drawing.width, drawing.height
+
+
+def draw_svg_by_width(c, svg_path, x, y, target_width_pts):
+    """
+    Draws an SVG file onto the ReportLab canvas, scaled to a target width.
+
+    Args:
+        c: ReportLab canvas
+        svg_path: Path to the SVG file
+        x: X position (bottom-left) in points
+        y: Y position (bottom-left) in points
+        target_width_pts: Target width in points (will scale proportionally)
+
+    Returns:
+        (width, height) of the rendered SVG in points
+    """
+    drawing = svg2rlg(svg_path)
+    if drawing is None:
+        return 0, 0
+
+    # Calculate scale factor to achieve target width
+    original_height = drawing.height
+    original_width = drawing.width
+    scale = target_width_pts / original_width
 
     # Scale the drawing
     drawing.width = original_width * scale
