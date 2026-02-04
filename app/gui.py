@@ -331,8 +331,8 @@ class App(TkinterDnDCustomTk):
 
         # Disable buttons during processing
         self.generate_btn.configure(state="disabled")
-        self.orders_label.configure(text="Processing...", text_color="yellow")
-        self.custom_label.configure(text="Processing...", text_color="yellow")
+        self.orders_label.configure(text="Processing...", text_color="orange")
+        self.custom_label.configure(text="Processing...", text_color="orange")
 
         # Start simulated progress animation
         self._simulated_progress = 0
