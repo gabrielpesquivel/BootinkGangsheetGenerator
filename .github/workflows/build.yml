@@ -1,0 +1,65 @@
+name: Build Executables
+
+on:
+  push:
+    branches: ['**']
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact-name: Bootink Sheet Tool.exe
+          - os: macos-14  # Apple Silicon (M1+)
+            artifact-name: Bootink Sheet Tool
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Tcl/Tk (macOS)
+        if: runner.os == 'macOS'
+        run: brew install tcl-tk
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build executable
+        working-directory: app
+        run: python -m PyInstaller build_exe.spec --noconfirm
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-build
+          path: app/dist/${{ matrix.artifact-name }}
+
+  package:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Flatten into dist
+        run: |
+          mkdir -p final-dist
+          cp dist/Windows-build/* final-dist/
+          cp dist/macOS-build/* final-dist/
+          ls -la final-dist/
+
+      - name: Upload combined dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: final-dist/

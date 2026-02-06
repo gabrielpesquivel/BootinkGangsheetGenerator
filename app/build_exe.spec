@@ -18,6 +18,12 @@ ROOT_DIR = SPEC_DIR.parent
 
 block_cipher = None
 
+# Platform detection
+is_macos = sys.platform == 'darwin'
+
+# Icon: use .ico on Windows, skip on macOS (no .icns available)
+icon_file = None if is_macos else str(ROOT_DIR / 'assets' / 'bootinkLogo.ico')
+
 # Modules to exclude for smaller size (conservative list)
 excluded_modules = [
     # Testing frameworks
@@ -83,9 +89,9 @@ exe = EXE(
     runtime_tmpdir=None,  # Use system temp directory (avoids cache folder on desktop)
     console=False,
     disable_windowed_traceback=False,
-    argv_emulation=False,
+    argv_emulation=is_macos,  # Required for macOS GUI apps
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=str(ROOT_DIR / 'assets' / 'bootinkLogo.ico'),
+    icon=icon_file,
 )
