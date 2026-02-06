@@ -126,6 +126,30 @@ def is_custom_item(lineitem_name):
     return any(pattern in upper_name for pattern in CUSTOM_PATTERNS)
 
 
+def is_custom_initials_type(lineitem_name):
+    """
+    Check if this is a CUSTOM INITIALS type that should always use 'Initials' sizing (5mm).
+    """
+    return 'CUSTOM INITIALS' in lineitem_name.upper()
+
+
+def is_custom_word_type(lineitem_name):
+    """
+    Check if this is a custom word type that should always use 'Words' sizing (4mm).
+
+    Custom word types include: CUSTOM TEXT, CUSTOM NAME, FIRST NAME, LAST NAME,
+    CUSTOM DATE, CUSTOM VERSE, CUSTOM NUMBER(S), REQUEST A FLAG.
+
+    CUSTOM INITIALS is excluded - it uses 'Initials' sizing (5mm).
+    """
+    upper_name = lineitem_name.upper()
+    # Custom initials should use 'Initials' sizing, not 'Words'
+    if 'CUSTOM INITIALS' in upper_name:
+        return False
+    # All other custom patterns should force 'Words' sizing
+    return is_custom_item(lineitem_name)
+
+
 def get_custom_text(order_num, lineitem_name, custom_lookup):
     """
     Look up the actual custom text for a custom item.
@@ -473,9 +497,13 @@ def collect_items_from_csv(df, custom_lookup=None):
             continue
 
         # Determine size and geometry
-        # Force 'Initials' category for CUSTOM INITIALS items regardless of text length
-        if is_custom_initials:
+        # Custom types always use fixed sizing regardless of character count:
+        # - CUSTOM INITIALS -> 'Initials' (5mm)
+        # - All other custom types -> 'Words' (4mm)
+        if is_custom_initials_type(lineitem_name):
             size = 'Initials'
+        elif is_custom_word_type(lineitem_name):
+            size = 'Words'
         else:
             size = determine_size_category(text)
         size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])

@@ -332,6 +332,12 @@ class App(TkinterDnDCustomTk):
         # Disable buttons during processing
         self.generate_btn.configure(state="disabled")
         self.orders_label.configure(text="Processing...", text_color="orange")
+        self.custom_label.configure(text="Processing...", text_color="orange")
+
+        # Start simulated progress animation
+        self._simulated_progress = 0
+        self._processing = True
+        self._animate_progress()
 
         # Run in background thread
         thread = threading.Thread(target=self._process_worker)
@@ -423,6 +429,19 @@ class App(TkinterDnDCustomTk):
         c_with_border.save()
         c_no_border.save()
 
+    def _animate_progress(self):
+        """Animate the progress bar slowly while processing."""
+        if not self._processing:
+            return
+
+        # Slowly increment progress (max 90% to leave room for completion)
+        if self._simulated_progress < 0.9:
+            self._simulated_progress += 0.02
+            self.progress.set(self._simulated_progress)
+
+        # Continue animating every 200ms
+        self.after(200, self._animate_progress)
+
     def _check_queue(self):
         """Check message queue for updates from worker thread."""
         try:
@@ -444,6 +463,9 @@ class App(TkinterDnDCustomTk):
 
     def _on_processing_done(self, errors):
         """Called when all processing is complete."""
+        # Stop progress animation
+        self._processing = False
+
         # Re-enable generate button
         self.generate_btn.configure(state="normal")
 
