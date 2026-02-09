@@ -63,7 +63,7 @@ def _build_symbol_lookup():
 SYMBOL_LOOKUP = _build_symbol_lookup()
 
 # Patterns that indicate a custom item needing lookup
-CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER', 'FIRST NAME', 'REQUEST A FLAG', 'PERIODS', 'SLASHES', 'LAST NAME', 'CUSTOM VERSE']
+CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER', 'FIRST NAME', 'REQUEST A FLAG', 'CUSTOM DATES', 'LAST NAME', 'CUSTOM VERSE']
 
 
 def safe_str(value):
@@ -138,7 +138,7 @@ def is_custom_word_type(lineitem_name):
     Check if this is a custom word type that should always use 'Words' sizing (4mm).
 
     Custom word types include: CUSTOM TEXT, CUSTOM NAME, FIRST NAME, LAST NAME,
-    CUSTOM DATE, CUSTOM VERSE, CUSTOM NUMBER(S), REQUEST A FLAG.
+    CUSTOM DATES, CUSTOM VERSE, CUSTOM NUMBER(S), REQUEST A FLAG.
 
     CUSTOM INITIALS is excluded - it uses 'Initials' sizing (5mm).
     """
