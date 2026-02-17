@@ -400,6 +400,14 @@ def collect_items_from_csv(df, custom_lookup=None):
         qty_val = row.get('Lineitem quantity')
         qty = 1 if pd.isna(qty_val) else int(qty_val)
 
+        # Starter kits don't have item details yet - show order number in yellow
+        if 'STARTER KIT' in lineitem_name.upper():
+            error_item = create_error_item(current_order, "Starter kit")
+            if error_item:
+                for _ in range(qty):
+                    items.append(error_item.copy())
+            continue
+
         # Custom images can't be printed - show order number in yellow instead
         if 'CUSTOM IMAGE' in lineitem_name.upper():
             error_item = create_error_item(current_order, "Custom image")
