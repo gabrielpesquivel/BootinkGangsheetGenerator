@@ -397,32 +397,20 @@ class App(TkinterDnDCustomTk):
         # Load data (utf-8-sig preserves accented characters)
         df = pd.read_csv(csv_path, encoding='utf-8-sig')
 
-        # Setup both PDFs
-        c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
-        c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, config.PAGE_HEIGHT))
-
         # Collect items with custom lookup
         items = pipeline.collect_items_from_csv(df, custom_lookup)
 
-        # Layout (use same layout for both)
-        layout_mgr = layout.OptimizedLayoutManager(c_with_border)
+        # Layout to determine total height
+        layout_mgr = layout.OptimizedLayoutManager()
         placed_items = layout_mgr.place_items(items)
+        sheet_height = layout_mgr.total_height
 
-        # Render all items to both PDFs, handling page breaks
-        placed_items.sort(key=lambda p: p[2])  # Sort by page number
-        current_page_with_border = 1
-        current_page_no_border = 1
+        # Create canvases with dynamic height and render
+        c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, sheet_height))
+        c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, sheet_height))
+
         for x, y, page, item in placed_items:
-            # Handle page breaks for PDF with border
-            while current_page_with_border < page:
-                c_with_border.showPage()
-                current_page_with_border += 1
             pipeline.render_item(c_with_border, x, y, item, draw_cutting_border=True)
-
-            # Handle page breaks for PDF without border
-            while current_page_no_border < page:
-                c_no_border.showPage()
-                current_page_no_border += 1
             pipeline.render_item(c_no_border, x, y, item, draw_cutting_border=False)
 
         # Save both PDFs

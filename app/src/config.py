@@ -11,10 +11,10 @@ ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 FONT_PATH = os.path.join(ASSETS_DIR, 'fonts', 'Industry_Ultra.ttf')
 FLAGS_DIR = os.path.join(ASSETS_DIR, 'flags')
 
-# Page Specs (A4 in points)
+# Page Specs (600mm-wide roll, variable height)
 MM_TO_PTS = 2.83465
-PAGE_WIDTH = 210 * MM_TO_PTS
-PAGE_HEIGHT = 297 * MM_TO_PTS
+PAGE_WIDTH = 600 * MM_TO_PTS
+MIN_PAGE_HEIGHT = 50 * MM_TO_PTS  # Minimum height for empty/small sheets
 MARGIN = 10 * MM_TO_PTS
 GAP = 25 * MM_TO_PTS  # Grid line every 25mm
 GRID_SIZE = 25 * MM_TO_PTS  # One grid square = 25mm
