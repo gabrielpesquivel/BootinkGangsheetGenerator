@@ -3,7 +3,7 @@ from . import config
 
 class OptimizedLayoutManager:
     """
-    Layout manager for a single continuous sheet (600mm wide, variable height).
+    Layout manager for a single continuous sheet (580mm wide, variable height).
 
     Places items row by row, growing downward indefinitely.
     All items are on page 1 (no pagination).
