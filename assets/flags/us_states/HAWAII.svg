@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 34.44 17.75">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #c8202f;
+      }
+
+      .cls-3 {
+        fill: #222d65;
+      }
+
+      .cls-4 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-5 {
+        fill: #fff;
+      }
+
+      .cls-6 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" x=".42" y=".74" width="17.01" height="9.92"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <path class="cls-1" d="M.42.74v4.25h15.59v4.25h-.71L.42.74ZM15.3.74h-7.44v9.21H.42v-.71L15.3.74Z"/>
+    </clipPath>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-3" d="M.42.74h34.02v17.01H.42V.74Z"/>
+      <g class="cls-6">
+        <g>
+          <path class="cls-3" d="M.42.74l19.84,11.34M15.3.74L.42,9.24"/>
+          <polygon class="cls-5" points="19.84 12.82 7.86 5.97 .84 9.98 0 8.5 6.15 4.99 0 1.48 .84 0 7.86 4.01 14.88 0 15.73 1.48 9.58 4.99 20.69 11.34 19.84 12.82"/>
+        </g>
+      </g>
+      <g class="cls-4">
+        <g>
+          <path class="cls-3" d="M.42.74l19.84,11.34M15.3.74L.42,9.24"/>
+          <polygon class="cls-2" points="19.98 12.57 7.86 5.64 .7 9.73 .14 8.75 6.72 4.99 .14 1.23 .7 .25 7.86 4.34 15.02 .25 15.58 1.23 9.01 4.99 20.55 11.58 19.98 12.57"/>
+        </g>
+      </g>
+      <g>
+        <path class="cls-3" d="M7.86.74v9.92M.42,4.99h17.01"/>
+        <polygon class="cls-5" points="9.28 10.66 6.45 10.66 6.45 6.41 .42 6.41 .42 3.57 6.45 3.57 6.45 .74 9.28 .74 9.28 3.57 17.43 3.57 17.43 6.41 9.28 6.41 9.28 10.66"/>
+      </g>
+      <path class="cls-5" d="M34.44.74v2.83h-18.43l-.71-.71V.74h19.13ZM34.44,7.12v2.83H15.3v-2.83h19.13ZM34.44,13.49v4.25H.42v-4.25h34.02Z"/>
+      <path class="cls-2" d="M34.44,2.86v2.98H.42v-1.7h14.88v-1.28h19.13ZM34.44,9.24v2.13H.42v-2.13h34.02ZM34.44,15.62v2.13H.42v-2.13h34.02ZM7.01.74h1.7v9.21h-1.7V.74Z"/>
+      <path class="cls-3" d="M34.44,4.99v1.77H15.3v-1.77h19.13Z"/>
+    </g>
+  </g>
+</svg>

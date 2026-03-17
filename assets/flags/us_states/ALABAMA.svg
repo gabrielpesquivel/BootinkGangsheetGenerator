@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 27.12 19.41">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #010101;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        fill: #b11f25;
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" x=".8" y="1.2" width="25.51" height="17.01"/>
+    </clipPath>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g class="cls-5">
+      <path class="cls-3" d="M.8,1.2h25.51v17.01H.8V1.2Z"/>
+      <g>
+        <path class="cls-2" d="M.8,1.2l25.51,17.01M.8,18.21L26.31,1.2"/>
+        <polygon class="cls-4" points="25.51 19.41 13.56 11.44 1.6 19.41 0 17.01 10.95 9.71 0 2.41 1.6 0 13.56 7.97 25.51 0 27.12 2.41 16.16 9.71 27.12 17.01 25.51 19.41"/>
+      </g>
+    </g>
+  </g>
+</svg>

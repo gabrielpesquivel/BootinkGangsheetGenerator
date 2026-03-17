@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 30.01 21.78">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-4 {
+        fill: #c02033;
+      }
+
+      .cls-5 {
+        fill: #1d2859;
+      }
+    </style>
+    <clipPath id="clippath">
+      <polygon class="cls-1" points="2.13 19.39 2.13 2.39 29.76 5.57 23.39 10.89 29.76 16.2 2.13 19.39"/>
+    </clipPath>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g class="cls-3">
+        <g>
+          <g>
+            <path class="cls-2" d="M29.76,5.57L2.13,2.39v17.01l27.64-3.19"/>
+            <polygon class="cls-4" points="0 21.78 0 0 30.01 3.46 29.52 7.69 4.25 4.77 4.25 17.01 29.52 14.09 30.01 18.32 0 21.78"/>
+          </g>
+          <rect class="cls-4" x="2.13" y="9.83" width="27.64" height="2.13"/>
+        </g>
+      </g>
+      <path class="cls-5" d="M2.13,2.39v17.01l17.01-8.5L2.13,2.39Z"/>
+      <g>
+        <circle class="cls-2" cx="7.38" cy="10.89" r="3.19"/>
+        <circle class="cls-4" cx="7.38" cy="10.89" r="2.13"/>
+        <g id="s">
+          <g id="f">
+            <g id="t">
+              <g id="o">
+                <path class="cls-2" d="M16.49,10.89l-.63-.21-.1.32.73-.11Z"/>
+              </g>
+              <g id="o-2" data-name="o">
+                <path class="cls-2" d="M16.49,10.89l-.63.21-.1-.32.73.11Z"/>
+              </g>
+            </g>
+            <g id="t-2" data-name="t">
+              <g id="o-3" data-name="o">
+                <path class="cls-2" d="M16.03,11.52v-.66h-.33s.33.66.33.66Z"/>
+              </g>
+              <g id="o-4" data-name="o">
+                <path class="cls-2" d="M16.03,11.52l-.39-.54.27-.2.12.73Z"/>
+              </g>
+            </g>
+          </g>
+          <g id="t-3" data-name="t">
+            <g id="o-5" data-name="o">
+              <path class="cls-2" d="M16.03,10.26l-.39.54.27.2.12-.73Z"/>
+            </g>
+            <g id="o-6" data-name="o">
+              <path class="cls-2" d="M16.03,10.26v.66h-.33s.33-.66.33-.66Z"/>
+            </g>
+          </g>
+          <g id="f-2" data-name="f">
+            <g id="t-4" data-name="t">
+              <g id="o-7" data-name="o">
+                <path class="cls-2" d="M15.29,11.28l.63-.21-.1-.32-.53.52Z"/>
+              </g>
+              <g id="o-8" data-name="o">
+                <path class="cls-2" d="M15.29,11.28l.39-.54.27.2-.66.34Z"/>
+              </g>
+            </g>
+            <g id="t-5" data-name="t">
+              <g id="o-9" data-name="o">
+                <path class="cls-2" d="M15.29,10.5l.39.54.27-.2-.66-.34Z"/>
+              </g>
+              <g id="o-10" data-name="o">
+                <path class="cls-2" d="M15.29,10.5l.63.21-.1.32-.53-.52Z"/>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="s3">
+          <g id="s-2" data-name="s">
+            <g id="f-3" data-name="f">
+              <g id="t-6" data-name="t">
+                <g id="o-11" data-name="o">
+                  <path class="cls-2" d="M12.24,10.89l-.63-.21-.1.32.73-.11Z"/>
+                </g>
+                <g id="o-12" data-name="o">
+                  <path class="cls-2" d="M12.24,10.89l-.63.21-.1-.32.73.11Z"/>
+                </g>
+              </g>
+              <g id="t-7" data-name="t">
+                <g id="o-13" data-name="o">
+                  <path class="cls-2" d="M11.78,11.52v-.66h-.33s.33.66.33.66Z"/>
+                </g>
+                <g id="o-14" data-name="o">
+                  <path class="cls-2" d="M11.78,11.52l-.39-.54.27-.2.12.73Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-8" data-name="t">
+              <g id="o-15" data-name="o">
+                <path class="cls-2" d="M11.78,10.26l-.39.54.27.2.12-.73Z"/>
+              </g>
+              <g id="o-16" data-name="o">
+                <path class="cls-2" d="M11.78,10.26v.66h-.33s.33-.66.33-.66Z"/>
+              </g>
+            </g>
+            <g id="f-4" data-name="f">
+              <g id="t-9" data-name="t">
+                <g id="o-17" data-name="o">
+                  <path class="cls-2" d="M11.04,11.28l.63-.21-.1-.32-.53.52Z"/>
+                </g>
+                <g id="o-18" data-name="o">
+                  <path class="cls-2" d="M11.04,11.28l.39-.54.27.2-.66.34Z"/>
+                </g>
+              </g>
+              <g id="t-10" data-name="t">
+                <g id="o-19" data-name="o">
+                  <path class="cls-2" d="M11.04,10.5l.39.54.27-.2-.66-.34Z"/>
+                </g>
+                <g id="o-20" data-name="o">
+                  <path class="cls-2" d="M11.04,10.5l.63.21-.1.32-.53-.52Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s-3" data-name="s">
+            <g id="f-5" data-name="f">
+              <g id="t-11" data-name="t">
+                <g id="o-21" data-name="o">
+                  <path class="cls-2" d="M14.27,9.72l-.66-.1-.05.33.71-.23Z"/>
+                </g>
+                <g id="o-22" data-name="o">
+                  <path class="cls-2" d="M14.27,9.72l-.59.31-.15-.29h.74Z"/>
+                </g>
+              </g>
+              <g id="t-12" data-name="t">
+                <g id="o-23" data-name="o">
+                  <path class="cls-2" d="M13.92,10.42l-.11-.65-.33.06.44.6Z"/>
+                </g>
+                <g id="o-24" data-name="o">
+                  <path class="cls-2" d="M13.92,10.42l-.48-.46.23-.24.24.7Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-13" data-name="t">
+              <g id="o-25" data-name="o">
+                <path class="cls-2" d="M13.71,9.17l-.29.6.3.15v-.74Z"/>
+              </g>
+              <g id="o-26" data-name="o">
+                <path class="cls-2" d="M13.71,9.17l.11.65-.33.06.22-.71Z"/>
+              </g>
+            </g>
+            <g id="f-6" data-name="f">
+              <g id="t-14" data-name="t">
+                <g id="o-27" data-name="o">
+                  <path class="cls-2" d="M13.15,10.31l.59-.31-.15-.29-.43.6Z"/>
+                </g>
+                <g id="o-28" data-name="o">
+                  <path class="cls-2" d="M13.15,10.31l.29-.6.3.15-.59.45Z"/>
+                </g>
+              </g>
+              <g id="t-15" data-name="t">
+                <g id="o-29" data-name="o">
+                  <path class="cls-2" d="M13.02,9.54l.48.46.23-.24-.71-.23Z"/>
+                </g>
+                <g id="o-30" data-name="o">
+                  <path class="cls-2" d="M13.02,9.54l.66.1-.05.33-.61-.43Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s-4" data-name="s">
+            <g id="f-7" data-name="f">
+              <g id="t-16" data-name="t">
+                <g id="o-31" data-name="o">
+                  <path class="cls-2" d="M14.27,12.06l-.59-.31-.15.29h.74Z"/>
+                </g>
+                <g id="o-32" data-name="o">
+                  <path class="cls-2" d="M14.27,12.06l-.66.1-.05-.33.71.23Z"/>
+                </g>
+              </g>
+              <g id="t-17" data-name="t">
+                <g id="o-33" data-name="o">
+                  <path class="cls-2" d="M13.71,12.61l.11-.65-.33-.06.22.71Z"/>
+                </g>
+                <g id="o-34" data-name="o">
+                  <path class="cls-2" d="M13.71,12.61l-.29-.6.3-.15v.74Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-18" data-name="t">
+              <g id="o-35" data-name="o">
+                <path class="cls-2" d="M13.92,11.36l-.48.46.23.24.24-.7Z"/>
+              </g>
+              <g id="o-36" data-name="o">
+                <path class="cls-2" d="M13.92,11.36l-.11.65-.33-.06.44-.6Z"/>
+              </g>
+            </g>
+            <g id="f-8" data-name="f">
+              <g id="t-19" data-name="t">
+                <g id="o-37" data-name="o">
+                  <path class="cls-2" d="M13.02,12.24l.66-.1-.05-.33-.61.43Z"/>
+                </g>
+                <g id="o-38" data-name="o">
+                  <path class="cls-2" d="M13.02,12.24l.48-.46.23.24-.71.23Z"/>
+                </g>
+              </g>
+              <g id="t-20" data-name="t">
+                <g id="o-39" data-name="o">
+                  <path class="cls-2" d="M13.15,11.47l.29.6.3-.15-.59-.45Z"/>
+                </g>
+                <g id="o-40" data-name="o">
+                  <path class="cls-2" d="M13.15,11.47l.59.31-.15.29-.43-.6Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="s6">
+          <g id="s-5" data-name="s">
+            <g id="f-9" data-name="f">
+              <g id="t-21" data-name="t">
+                <g id="o-41" data-name="o">
+                  <path class="cls-2" d="M9.55,15.23l-.1-.66-.33.05.43.61Z"/>
+                </g>
+                <g id="o-42" data-name="o">
+                  <path class="cls-2" d="M9.55,15.23l-.47-.47.24-.23.23.71Z"/>
+                </g>
+              </g>
+              <g id="t-22" data-name="t">
+                <g id="o-43" data-name="o">
+                  <path class="cls-2" d="M8.78,15.11l.59-.3-.15-.3-.45.59Z"/>
+                </g>
+                <g id="o-44" data-name="o">
+                  <path class="cls-2" d="M8.78,15.11l.31-.59.29.15-.6.44Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-23" data-name="t">
+              <g id="o-45" data-name="o">
+                <path class="cls-2" d="M9.91,14.54l-.66-.11-.05.33.71-.22Z"/>
+              </g>
+              <g id="o-46" data-name="o">
+                <path class="cls-2" d="M9.91,14.54l-.59.3-.15-.3h.74Z"/>
+              </g>
+            </g>
+            <g id="f-10" data-name="f">
+              <g id="t-24" data-name="t">
+                <g id="o-47" data-name="o">
+                  <path class="cls-2" d="M8.67,14.33l.47.47.24-.23-.7-.24Z"/>
+                </g>
+                <g id="o-48" data-name="o">
+                  <path class="cls-2" d="M8.67,14.33l.66.11-.05.33-.6-.44Z"/>
+                </g>
+              </g>
+              <g id="t-25" data-name="t">
+                <g id="o-49" data-name="o">
+                  <path class="cls-2" d="M9.37,13.98l-.31.59.29.15v-.74Z"/>
+                </g>
+                <g id="o-50" data-name="o">
+                  <path class="cls-2" d="M9.37,13.98l.1.66-.33.05.23-.71Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s-6" data-name="s">
+            <g id="f-11" data-name="f">
+              <g id="t-26" data-name="t">
+                <g id="o-51" data-name="o">
+                  <path class="cls-2" d="M7.16,15.74l.23-.62-.31-.12.08.74Z"/>
+                </g>
+                <g id="o-52" data-name="o">
+                  <path class="cls-2" d="M7.16,15.74l-.18-.64.32-.09-.14.73Z"/>
+                </g>
+              </g>
+              <g id="t-27" data-name="t">
+                <g id="o-53" data-name="o">
+                  <path class="cls-2" d="M6.55,15.25l.66.03v-.33s-.66.3-.66.3Z"/>
+                </g>
+                <g id="o-54" data-name="o">
+                  <path class="cls-2" d="M6.55,15.25l.55-.37.18.28-.74.09Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-28" data-name="t">
+              <g id="o-55" data-name="o">
+                <path class="cls-2" d="M7.82,15.31l-.52-.41-.21.26.73.15Z"/>
+              </g>
+              <g id="o-56" data-name="o">
+                <path class="cls-2" d="M7.82,15.31l-.66-.03v-.33s.66.36.66.36Z"/>
+              </g>
+            </g>
+            <g id="f-12" data-name="f">
+              <g id="t-29" data-name="t">
+                <g id="o-57" data-name="o">
+                  <path class="cls-2" d="M6.83,14.52l.18.64.32-.09-.5-.55Z"/>
+                </g>
+                <g id="o-58" data-name="o">
+                  <path class="cls-2" d="M6.83,14.52l.52.41-.21.26-.31-.67Z"/>
+                </g>
+              </g>
+              <g id="t-30" data-name="t">
+                <g id="o-59" data-name="o">
+                  <path class="cls-2" d="M7.61,14.56l-.55.37.18.28.37-.64Z"/>
+                </g>
+                <g id="o-60" data-name="o">
+                  <path class="cls-2" d="M7.61,14.56l-.23.62-.31-.12.54-.51Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s3-2" data-name="s3">
+            <g id="s-7" data-name="s">
+              <g id="f-13" data-name="f">
+                <g id="t-31" data-name="t">
+                  <g id="o-61" data-name="o">
+                    <path class="cls-2" d="M4.83,15.02l.51-.43-.21-.25-.29.68Z"/>
+                  </g>
+                  <g id="o-62" data-name="o">
+                    <path class="cls-2" d="M4.83,15.02l.16-.65.32.08-.48.57Z"/>
+                  </g>
+                </g>
+                <g id="t-32" data-name="t">
+                  <g id="o-63" data-name="o">
+                    <path class="cls-2" d="M4.53,14.3l.57.35.17-.28-.74-.07Z"/>
+                  </g>
+                  <g id="o-64" data-name="o">
+                    <path class="cls-2" d="M4.53,14.3l.66-.05.02.33-.69-.28Z"/>
+                  </g>
+                </g>
+              </g>
+              <g id="t-33" data-name="t">
+                <g id="o-65" data-name="o">
+                  <path class="cls-2" d="M5.61,14.96l-.25-.61-.31.13.56.49Z"/>
+                </g>
+                <g id="o-66" data-name="o">
+                  <path class="cls-2" d="M5.61,14.96l-.57-.35.17-.28.39.63Z"/>
+                </g>
+              </g>
+              <g id="f-14" data-name="f">
+                <g id="t-34" data-name="t">
+                  <g id="o-67" data-name="o">
+                    <path class="cls-2" d="M5.13,13.79l-.16.65.32.08-.17-.72Z"/>
+                  </g>
+                  <g id="o-68" data-name="o">
+                    <path class="cls-2" d="M5.13,13.79l.25.61-.31.13.06-.74Z"/>
+                  </g>
+                </g>
+                <g id="t-35" data-name="t">
+                  <g id="o-69" data-name="o">
+                    <path class="cls-2" d="M5.79,14.2l-.66.05.02.33.64-.38Z"/>
+                  </g>
+                  <g id="o-70" data-name="o">
+                    <path class="cls-2" d="M5.79,14.2l-.51.43-.21-.25.72-.18Z"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g id="s-8" data-name="s">
+              <g id="f-15" data-name="f">
+                <g id="t-36" data-name="t">
+                  <g id="o-71" data-name="o">
+                    <path class="cls-2" d="M4.76,17.36l.43-.51-.25-.21-.17.72Z"/>
+                  </g>
+                  <g id="o-72" data-name="o">
+                    <path class="cls-2" d="M4.76,17.36l.05-.66.33.02-.38.64Z"/>
+                  </g>
+                </g>
+                <g id="t-37" data-name="t">
+                  <g id="o-73" data-name="o">
+                    <path class="cls-2" d="M4.35,16.7l.62.25.12-.31-.74.06Z"/>
+                  </g>
+                  <g id="o-74" data-name="o">
+                    <path class="cls-2" d="M4.35,16.7l.64-.16.08.32-.72-.16Z"/>
+                  </g>
+                </g>
+              </g>
+              <g id="t-38" data-name="t">
+                <g id="o-75" data-name="o">
+                  <path class="cls-2" d="M5.52,17.17l-.35-.56-.28.18.63.39Z"/>
+                </g>
+                <g id="o-76" data-name="o">
+                  <path class="cls-2" d="M5.52,17.17l-.62-.25.12-.31.49.56Z"/>
+                </g>
+              </g>
+              <g id="f-16" data-name="f">
+                <g id="t-39" data-name="t">
+                  <g id="o-77" data-name="o">
+                    <path class="cls-2" d="M4.85,16.1l-.05.66.33.02-.28-.69Z"/>
+                  </g>
+                  <g id="o-78" data-name="o">
+                    <path class="cls-2" d="M4.85,16.1l.35.56-.28.18-.07-.74Z"/>
+                  </g>
+                </g>
+                <g id="t-40" data-name="t">
+                  <g id="o-79" data-name="o">
+                    <path class="cls-2" d="M5.57,16.39l-.64.16.08.32.56-.48Z"/>
+                  </g>
+                  <g id="o-80" data-name="o">
+                    <path class="cls-2" d="M5.57,16.39l-.43.51-.25-.21.68-.29Z"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g id="s-9" data-name="s">
+              <g id="f-17" data-name="f">
+                <g id="t-41" data-name="t">
+                  <g id="o-81" data-name="o">
+                    <path class="cls-2" d="M2.77,16.13l.57-.34-.17-.29-.4.62Z"/>
+                  </g>
+                  <g id="o-82" data-name="o">
+                    <path class="cls-2" d="M2.77,16.13l.26-.61.3.13-.57.48Z"/>
+                  </g>
+                </g>
+                <g id="t-42" data-name="t">
+                  <g id="o-83" data-name="o">
+                    <path class="cls-2" d="M2.6,15.37l.5.44.22-.25-.72-.19Z"/>
+                  </g>
+                  <g id="o-84" data-name="o">
+                    <path class="cls-2" d="M2.6,15.37l.66.06-.03.33-.63-.39Z"/>
+                  </g>
+                </g>
+              </g>
+              <g id="t-43" data-name="t">
+                <g id="o-85" data-name="o">
+                  <path class="cls-2" d="M3.54,16.2l-.15-.65-.32.07.47.58Z"/>
+                </g>
+                <g id="o-86" data-name="o">
+                  <path class="cls-2" d="M3.54,16.2l-.5-.44.22-.25.28.69Z"/>
+                </g>
+              </g>
+              <g id="f-18" data-name="f">
+                <g id="t-44" data-name="t">
+                  <g id="o-87" data-name="o">
+                    <path class="cls-2" d="M3.27,14.97l-.26.61.3.13-.04-.74Z"/>
+                  </g>
+                  <g id="o-88" data-name="o">
+                    <path class="cls-2" d="M3.27,14.97l.15.65-.32.07.18-.72Z"/>
+                  </g>
+                </g>
+                <g id="t-45" data-name="t">
+                  <g id="o-89" data-name="o">
+                    <path class="cls-2" d="M3.85,15.49l-.66-.06-.03.33.69-.27Z"/>
+                  </g>
+                  <g id="o-90" data-name="o">
+                    <path class="cls-2" d="M3.85,15.49l-.57.34-.17-.29.74-.05Z"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s-10" data-name="s">
+            <g id="f-19" data-name="f">
+              <g id="t-46" data-name="t">
+                <g id="o-91" data-name="o">
+                  <path class="cls-2" d="M3.14,13.25l.65-.13-.06-.33-.59.45Z"/>
+                </g>
+                <g id="o-92" data-name="o">
+                  <path class="cls-2" d="M3.14,13.25l.45-.49.24.23-.7.26Z"/>
+                </g>
+              </g>
+              <g id="t-47" data-name="t">
+                <g id="o-93" data-name="o">
+                  <path class="cls-2" d="M3.23,12.48l.32.58.29-.16-.61-.42Z"/>
+                </g>
+                <g id="o-94" data-name="o">
+                  <path class="cls-2" d="M3.23,12.48l.6.28-.14.3-.46-.58Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-48" data-name="t">
+              <g id="o-95" data-name="o">
+                <path class="cls-2" d="M3.85,13.58l.08-.66-.33-.04.25.7Z"/>
+              </g>
+              <g id="o-96" data-name="o">
+                <path class="cls-2" d="M3.85,13.58l-.32-.58.29-.16.03.74Z"/>
+              </g>
+            </g>
+            <g id="f-20" data-name="f">
+              <g id="t-49" data-name="t">
+                <g id="o-97" data-name="o">
+                  <path class="cls-2" d="M4,12.33l-.45.49.24.23.21-.71Z"/>
+                </g>
+                <g id="o-98" data-name="o">
+                  <path class="cls-2" d="M4,12.33l-.08.66-.33-.04.41-.62Z"/>
+                </g>
+              </g>
+              <g id="t-50" data-name="t">
+                <g id="o-99" data-name="o">
+                  <path class="cls-2" d="M4.38,13.01l-.6-.28-.14.3.74-.02Z"/>
+                </g>
+                <g id="o-100" data-name="o">
+                  <path class="cls-2" d="M4.38,13.01l-.65.13-.06-.33.72.2Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="s-11" data-name="s">
+          <g id="f-21" data-name="f">
+            <g id="t-51" data-name="t">
+              <g id="o-101" data-name="o">
+                <path class="cls-2" d="M2.52,10.89l.63.21.1-.32-.73.11Z"/>
+              </g>
+              <g id="o-102" data-name="o">
+                <path class="cls-2" d="M2.52,10.89l.63-.21.1.32-.73-.11Z"/>
+              </g>
+            </g>
+            <g id="t-52" data-name="t">
+              <g id="o-103" data-name="o">
+                <path class="cls-2" d="M2.98,10.26v.66h.33s-.33-.66-.33-.66Z"/>
+              </g>
+              <g id="o-104" data-name="o">
+                <path class="cls-2" d="M2.98,10.26l.39.54-.27.2-.12-.73Z"/>
+              </g>
+            </g>
+          </g>
+          <g id="t-53" data-name="t">
+            <g id="o-105" data-name="o">
+              <path class="cls-2" d="M2.98,11.52l.39-.54-.27-.2-.12.73Z"/>
+            </g>
+            <g id="o-106" data-name="o">
+              <path class="cls-2" d="M2.98,11.52v-.66h.33s-.33.66-.33.66Z"/>
+            </g>
+          </g>
+          <g id="f-22" data-name="f">
+            <g id="t-54" data-name="t">
+              <g id="o-107" data-name="o">
+                <path class="cls-2" d="M3.73,10.5l-.63.21.1.32.53-.52Z"/>
+              </g>
+              <g id="o-108" data-name="o">
+                <path class="cls-2" d="M3.73,10.5l-.39.54-.27-.2.66-.34Z"/>
+              </g>
+            </g>
+            <g id="t-55" data-name="t">
+              <g id="o-109" data-name="o">
+                <path class="cls-2" d="M3.73,11.28l-.39-.54-.27.2.66.34Z"/>
+              </g>
+              <g id="o-110" data-name="o">
+                <path class="cls-2" d="M3.73,11.28l-.63-.21.1-.32.53.52Z"/>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="s6-2" data-name="s6">
+          <g id="s-12" data-name="s">
+            <g id="f-23" data-name="f">
+              <g id="t-56" data-name="t">
+                <g id="o-111" data-name="o">
+                  <path class="cls-2" d="M9.55,6.55l-.1.66-.33-.05.43-.61Z"/>
+                </g>
+                <g id="o-112" data-name="o">
+                  <path class="cls-2" d="M9.55,6.55l-.47.47.24.23.23-.71Z"/>
+                </g>
+              </g>
+              <g id="t-57" data-name="t">
+                <g id="o-113" data-name="o">
+                  <path class="cls-2" d="M8.78,6.67l.59.3-.15.3-.45-.59Z"/>
+                </g>
+                <g id="o-114" data-name="o">
+                  <path class="cls-2" d="M8.78,6.67l.31.59.29-.15-.6-.44Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-58" data-name="t">
+              <g id="o-115" data-name="o">
+                <path class="cls-2" d="M9.91,7.24l-.66.11-.05-.33.71.22Z"/>
+              </g>
+              <g id="o-116" data-name="o">
+                <path class="cls-2" d="M9.91,7.24l-.59-.3-.15.3h.74Z"/>
+              </g>
+            </g>
+            <g id="f-24" data-name="f">
+              <g id="t-59" data-name="t">
+                <g id="o-117" data-name="o">
+                  <path class="cls-2" d="M8.67,7.45l.47-.47.24.23-.7.24Z"/>
+                </g>
+                <g id="o-118" data-name="o">
+                  <path class="cls-2" d="M8.67,7.45l.66-.11-.05-.33-.6.44Z"/>
+                </g>
+              </g>
+              <g id="t-60" data-name="t">
+                <g id="o-119" data-name="o">
+                  <path class="cls-2" d="M9.37,7.79l-.31-.59.29-.15v.74Z"/>
+                </g>
+                <g id="o-120" data-name="o">
+                  <path class="cls-2" d="M9.37,7.79l.1-.66-.33-.05.23.71Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s-13" data-name="s">
+            <g id="f-25" data-name="f">
+              <g id="t-61" data-name="t">
+                <g id="o-121" data-name="o">
+                  <path class="cls-2" d="M7.16,6.04l.23.62-.31.12.08-.74Z"/>
+                </g>
+                <g id="o-122" data-name="o">
+                  <path class="cls-2" d="M7.16,6.04l-.18.64.32.09-.14-.73Z"/>
+                </g>
+              </g>
+              <g id="t-62" data-name="t">
+                <g id="o-123" data-name="o">
+                  <path class="cls-2" d="M6.55,6.52l.66-.03v.33s-.66-.3-.66-.3Z"/>
+                </g>
+                <g id="o-124" data-name="o">
+                  <path class="cls-2" d="M6.55,6.52l.55.37.18-.28-.74-.09Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-63" data-name="t">
+              <g id="o-125" data-name="o">
+                <path class="cls-2" d="M7.82,6.47l-.52.41-.21-.26.73-.15Z"/>
+              </g>
+              <g id="o-126" data-name="o">
+                <path class="cls-2" d="M7.82,6.47l-.66.03v.33s.66-.36.66-.36Z"/>
+              </g>
+            </g>
+            <g id="f-26" data-name="f">
+              <g id="t-64" data-name="t">
+                <g id="o-127" data-name="o">
+                  <path class="cls-2" d="M6.83,7.26l.18-.64.32.09-.5.55Z"/>
+                </g>
+                <g id="o-128" data-name="o">
+                  <path class="cls-2" d="M6.83,7.26l.52-.41-.21-.26-.31.67Z"/>
+                </g>
+              </g>
+              <g id="t-65" data-name="t">
+                <g id="o-129" data-name="o">
+                  <path class="cls-2" d="M7.61,7.22l-.55-.37.18-.28.37.64Z"/>
+                </g>
+                <g id="o-130" data-name="o">
+                  <path class="cls-2" d="M7.61,7.22l-.23-.62-.31.12.54.51Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s3-3" data-name="s3">
+            <g id="s-14" data-name="s">
+              <g id="f-27" data-name="f">
+                <g id="t-66" data-name="t">
+                  <g id="o-131" data-name="o">
+                    <path class="cls-2" d="M4.83,6.76l.51.43-.21.25-.29-.68Z"/>
+                  </g>
+                  <g id="o-132" data-name="o">
+                    <path class="cls-2" d="M4.83,6.76l.16.65.32-.08-.48-.57Z"/>
+                  </g>
+                </g>
+                <g id="t-67" data-name="t">
+                  <g id="o-133" data-name="o">
+                    <path class="cls-2" d="M4.53,7.48l.57-.35.17.28-.74.07Z"/>
+                  </g>
+                  <g id="o-134" data-name="o">
+                    <path class="cls-2" d="M4.53,7.48l.66.05.02-.33-.69.28Z"/>
+                  </g>
+                </g>
+              </g>
+              <g id="t-68" data-name="t">
+                <g id="o-135" data-name="o">
+                  <path class="cls-2" d="M5.61,6.82l-.25.61-.31-.13.56-.49Z"/>
+                </g>
+                <g id="o-136" data-name="o">
+                  <path class="cls-2" d="M5.61,6.82l-.57.35.17.28.39-.63Z"/>
+                </g>
+              </g>
+              <g id="f-28" data-name="f">
+                <g id="t-69" data-name="t">
+                  <g id="o-137" data-name="o">
+                    <path class="cls-2" d="M5.13,7.99l-.16-.65.32-.08-.17.72Z"/>
+                  </g>
+                  <g id="o-138" data-name="o">
+                    <path class="cls-2" d="M5.13,7.99l.25-.61-.31-.13.06.74Z"/>
+                  </g>
+                </g>
+                <g id="t-70" data-name="t">
+                  <g id="o-139" data-name="o">
+                    <path class="cls-2" d="M5.79,7.57l-.66-.05.02-.33.64.38Z"/>
+                  </g>
+                  <g id="o-140" data-name="o">
+                    <path class="cls-2" d="M5.79,7.57l-.51-.43-.21.25.72.18Z"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g id="s-15" data-name="s">
+              <g id="f-29" data-name="f">
+                <g id="t-71" data-name="t">
+                  <g id="o-141" data-name="o">
+                    <path class="cls-2" d="M4.76,4.42l.43.51-.25.21-.17-.72Z"/>
+                  </g>
+                  <g id="o-142" data-name="o">
+                    <path class="cls-2" d="M4.76,4.42l.05.66.33-.02-.38-.64Z"/>
+                  </g>
+                </g>
+                <g id="t-72" data-name="t">
+                  <g id="o-143" data-name="o">
+                    <path class="cls-2" d="M4.35,5.08l.62-.25.12.31-.74-.06Z"/>
+                  </g>
+                  <g id="o-144" data-name="o">
+                    <path class="cls-2" d="M4.35,5.08l.64.16.08-.32-.72.16Z"/>
+                  </g>
+                </g>
+              </g>
+              <g id="t-73" data-name="t">
+                <g id="o-145" data-name="o">
+                  <path class="cls-2" d="M5.52,4.61l-.35.56-.28-.18.63-.39Z"/>
+                </g>
+                <g id="o-146" data-name="o">
+                  <path class="cls-2" d="M5.52,4.61l-.62.25.12.31.49-.56Z"/>
+                </g>
+              </g>
+              <g id="f-30" data-name="f">
+                <g id="t-74" data-name="t">
+                  <g id="o-147" data-name="o">
+                    <path class="cls-2" d="M4.85,5.68l-.05-.66.33-.02-.28.69Z"/>
+                  </g>
+                  <g id="o-148" data-name="o">
+                    <path class="cls-2" d="M4.85,5.68l.35-.56-.28-.18-.07.74Z"/>
+                  </g>
+                </g>
+                <g id="t-75" data-name="t">
+                  <g id="o-149" data-name="o">
+                    <path class="cls-2" d="M5.57,5.38l-.64-.16.08-.32.56.48Z"/>
+                  </g>
+                  <g id="o-150" data-name="o">
+                    <path class="cls-2" d="M5.57,5.38l-.43-.51-.25.21.68.29Z"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g id="s-16" data-name="s">
+              <g id="f-31" data-name="f">
+                <g id="t-76" data-name="t">
+                  <g id="o-151" data-name="o">
+                    <path class="cls-2" d="M2.77,5.65l.57.34-.17.29-.4-.62Z"/>
+                  </g>
+                  <g id="o-152" data-name="o">
+                    <path class="cls-2" d="M2.77,5.65l.26.61.3-.13-.57-.48Z"/>
+                  </g>
+                </g>
+                <g id="t-77" data-name="t">
+                  <g id="o-153" data-name="o">
+                    <path class="cls-2" d="M2.6,6.41l.5-.44.22.25-.72.19Z"/>
+                  </g>
+                  <g id="o-154" data-name="o">
+                    <path class="cls-2" d="M2.6,6.41l.66-.06-.03-.33-.63.39Z"/>
+                  </g>
+                </g>
+              </g>
+              <g id="t-78" data-name="t">
+                <g id="o-155" data-name="o">
+                  <path class="cls-2" d="M3.54,5.58l-.15.65-.32-.07.47-.58Z"/>
+                </g>
+                <g id="o-156" data-name="o">
+                  <path class="cls-2" d="M3.54,5.58l-.5.44.22.25.28-.69Z"/>
+                </g>
+              </g>
+              <g id="f-32" data-name="f">
+                <g id="t-79" data-name="t">
+                  <g id="o-157" data-name="o">
+                    <path class="cls-2" d="M3.27,6.81l-.26-.61.3-.13-.04.74Z"/>
+                  </g>
+                  <g id="o-158" data-name="o">
+                    <path class="cls-2" d="M3.27,6.81l.15-.65-.32-.07.18.72Z"/>
+                  </g>
+                </g>
+                <g id="t-80" data-name="t">
+                  <g id="o-159" data-name="o">
+                    <path class="cls-2" d="M3.85,6.29l-.66.06-.03-.33.69.27Z"/>
+                  </g>
+                  <g id="o-160" data-name="o">
+                    <path class="cls-2" d="M3.85,6.29l-.57-.34-.17.29.74.05Z"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="s-17" data-name="s">
+            <g id="f-33" data-name="f">
+              <g id="t-81" data-name="t">
+                <g id="o-161" data-name="o">
+                  <path class="cls-2" d="M3.14,8.52l.65.13-.06.33-.59-.45Z"/>
+                </g>
+                <g id="o-162" data-name="o">
+                  <path class="cls-2" d="M3.14,8.52l.45.49.24-.23-.7-.26Z"/>
+                </g>
+              </g>
+              <g id="t-82" data-name="t">
+                <g id="o-163" data-name="o">
+                  <path class="cls-2" d="M3.23,9.3l.32-.58.29.16-.61.42Z"/>
+                </g>
+                <g id="o-164" data-name="o">
+                  <path class="cls-2" d="M3.23,9.3l.6-.28-.14-.3-.46.58Z"/>
+                </g>
+              </g>
+            </g>
+            <g id="t-83" data-name="t">
+              <g id="o-165" data-name="o">
+                <path class="cls-2" d="M3.85,8.2l.08.66-.33.04.25-.7Z"/>
+              </g>
+              <g id="o-166" data-name="o">
+                <path class="cls-2" d="M3.85,8.2l-.32.58.29.16.03-.74Z"/>
+              </g>
+            </g>
+            <g id="f-34" data-name="f">
+              <g id="t-84" data-name="t">
+                <g id="o-167" data-name="o">
+                  <path class="cls-2" d="M4,9.45l-.45-.49.24-.23.21.71Z"/>
+                </g>
+                <g id="o-168" data-name="o">
+                  <path class="cls-2" d="M4,9.45l-.08-.66-.33.04.41.62Z"/>
+                </g>
+              </g>
+              <g id="t-85" data-name="t">
+                <g id="o-169" data-name="o">
+                  <path class="cls-2" d="M4.38,8.77l-.6.28-.14-.3.74.02Z"/>
+                </g>
+                <g id="o-170" data-name="o">
+                  <path class="cls-2" d="M4.38,8.77l-.65-.13-.06.33.72-.2Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
