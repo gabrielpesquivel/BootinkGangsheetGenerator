@@ -63,7 +63,7 @@ def _build_symbol_lookup():
 SYMBOL_LOOKUP = _build_symbol_lookup()
 
 # Patterns that indicate a custom item needing lookup
-CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER', 'FIRST NAME', 'REQUEST A FLAG', 'CUSTOM DATES', 'LAST NAME', 'CUSTOM VERSE']
+CUSTOM_PATTERNS = ['CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NAME', 'CUSTOM NUMBER', 'FIRST NAME', 'REQUEST A FLAG', 'CUSTOM DATES', 'CUSTOM DATE', 'LAST NAME', 'CUSTOM VERSE', 'ENTER YOUR DATE']
 
 
 def safe_str(value):
@@ -178,6 +178,116 @@ def get_custom_text(order_num, lineitem_name, custom_lookup):
     return None
 
 
+def parse_line_properties(properties_str):
+    """
+    Parse the 'Line: Properties' field from the new unified CSV format.
+
+    Properties are newline-separated 'key: value' pairs.
+    Lines starting with '_' are metadata and skipped.
+    Shopify escapes colons in values as '\\:' (e.g., 'IS 54\\:10' -> 'IS 54:10').
+    """
+    if not properties_str or pd.isna(properties_str) or str(properties_str).strip() == '':
+        return {}
+
+    properties = {}
+    for line in str(properties_str).split('\n'):
+        line = line.strip()
+        if not line or line.startswith('_'):
+            continue
+        if ': ' in line:
+            key, value = line.split(': ', 1)
+            # Unescape \: -> :
+            value = value.replace('\\:', ':')
+            properties[key.strip()] = value.strip()
+    return properties
+
+
+def get_custom_value_from_properties(properties):
+    """
+    Extract the custom value from parsed line properties.
+    Checks known custom keys in order and returns the first match.
+    """
+    custom_keys = [
+        'CUSTOM TEXT', 'CUSTOM INITIALS', 'CUSTOM NUMBERS', 'CUSTOM NUMBER',
+        'CUSTOM NAME', 'CUSTOM VERSE', 'REQUEST A FLAG', 'ENTER YOUR DATE',
+        'CUSTOM DATE', 'CUSTOM DATES', 'FIRST NAME', 'LAST NAME'
+    ]
+    for key in custom_keys:
+        if key in properties:
+            return properties[key]
+    return None
+
+
+def expand_starter_kit(order_num, properties, color, qty):
+    """
+    Expand a starter kit into individual items based on its properties.
+
+    A starter kit contains 6 sub-items: 2 initials, 2 numbers, 2 flags.
+    Each is created as an individual item and multiplied by qty.
+    """
+    sub_items = []
+    text_color = color.upper() if color else 'BLACK'
+
+    # Create text stickers for initials and numbers (both use 'Initials' sizing)
+    for key_prefix in ['STARTER KIT - INITIALS #', 'STARTER KIT - NUMBER #']:
+        for i in range(1, 3):
+            key = f'{key_prefix}{i}'
+            value = properties.get(key, '').strip()
+            if not value:
+                continue
+
+            size_cfg = config.SIZE_MAP['Initials']
+            grid_squares = determine_grid_squares(value)
+            rect_width = grid_squares * config.GRID_SIZE
+            rect_height = config.GRID_SIZE
+
+            try:
+                text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+                    value, config.FONT_PATH, size_cfg, rect_width, rect_height
+                )
+                sub_items.append({
+                    'type': 'sticker',
+                    'width': w,
+                    'height': h,
+                    'text_geo': text_geo,
+                    'bg_geo': bg_geo,
+                    'text_color': text_color
+                })
+            except Exception:
+                error_item = create_error_item(order_num, f"Cannot render starter kit text: {value}")
+                if error_item:
+                    sub_items.append(error_item)
+
+    # Create flag items
+    for i in range(1, 3):
+        key = f'STARTER KIT - FLAG #{i}'
+        flag_name = properties.get(key, '').strip()
+        if not flag_name:
+            continue
+
+        flag_path = FLAG_LOOKUP.get(flag_name.lower())
+        if flag_path and os.path.exists(flag_path):
+            flag_height_pts = config.SIZE_MAP['Flags']['target_height_mm'] * config.MM_TO_PTS
+            sub_items.append({
+                'type': 'flag',
+                'width': config.GRID_SIZE,
+                'height': config.GRID_SIZE,
+                'flag_path': flag_path,
+                'flag_height_pts': flag_height_pts
+            })
+        else:
+            error_item = create_error_item(order_num, f"Flag not found: {flag_name}")
+            if error_item:
+                sub_items.append(error_item)
+
+    # Multiply all sub-items by quantity
+    result = []
+    for _ in range(qty):
+        for item in sub_items:
+            result.append(item.copy())
+    return result
+
+
 def get_symbol_path(lineitem_name):
     """
     Check if lineitem is a symbol item and return the symbol SVG path.
@@ -216,7 +326,21 @@ def get_symbol_path(lineitem_name):
             if symbol_path and os.path.exists(symbol_path):
                 return symbol_path
 
-            print(f"Warning: Symbol file not found for '{symbol_name}' in category '{csv_category}'")
+            # Cross-category fallback: search ALL symbol categories
+            for fallback_folder in set(SYMBOL_CATEGORY_MAP.values()):
+                if fallback_folder == folder_name:
+                    continue
+                if color:
+                    fallback_key = f"{fallback_folder}/{symbol_name} - {color}".lower()
+                    symbol_path = SYMBOL_LOOKUP.get(fallback_key)
+                    if symbol_path and os.path.exists(symbol_path):
+                        return symbol_path
+                fallback_key_no_color = f"{fallback_folder}/{symbol_name}".lower()
+                symbol_path = SYMBOL_LOOKUP.get(fallback_key_no_color)
+                if symbol_path and os.path.exists(symbol_path):
+                    return symbol_path
+
+            print(f"Warning: Symbol file not found for '{symbol_name}' in any category")
             return None
     return None
 
@@ -372,49 +496,150 @@ def create_error_item(order_num, error_reason):
 
 def collect_items_from_csv(df, custom_lookup=None):
     """
-    First pass: collect all items from the CSV with their dimensions and render data.
+    Collect all items from the unified CSV with their dimensions and render data.
 
-    Args:
-        df: DataFrame from the orders CSV
-        custom_lookup: Dict mapping (order_number, lineitem_name) -> custom_value
+    Expects new Shopify export format with columns:
+    Number, Line: Name, Line: Quantity, Line: Properties, Line: Variant Title, Refund: ID
+
+    Custom values are read from inline Line: Properties. An optional custom_lookup
+    dict can provide fallback values.
 
     Returns:
         List of item dicts with 'width', 'height', 'type', and type-specific data.
         Items are returned in order, with error items (yellow order numbers) in place.
     """
     items = []
-    current_order = None
 
     for index, row in df.iterrows():
-        lineitem_name = safe_str(row.get('Lineitem name'))
+        order_num = safe_str(row.get('Number'))
+        lineitem_name = safe_str(row.get('Line: Name'))
+        qty_val = row.get('Line: Quantity')
+        # Don't use safe_str for properties — it replaces \n with spaces,
+        # which breaks multi-line property parsing
+        raw_props = row.get('Line: Properties')
+        properties_str = '' if pd.isna(raw_props) else str(raw_props)
+        variant = safe_str(row.get('Line: Variant Title'))
+        refund_id = safe_str(row.get('Refund: ID'))
 
-        # Track current order number (might be empty in continuation rows)
-        order_num = safe_str(row.get('Name'))
-        if order_num:
-            current_order = order_num
+        # Skip refunded items
+        if refund_id:
+            continue
+
+        # Skip shipping lines (variant is "shopify")
+        if variant.lower() == 'shopify':
+            continue
 
         # Skip items we don't want to print
         if not lineitem_name or 'Priming Wipe' in lineitem_name:
             continue
 
-        qty_val = row.get('Lineitem quantity')
+        # Skip if lineitem contains "Shipping"
+        if 'Shipping' in lineitem_name:
+            continue
+
         qty = 1 if pd.isna(qty_val) else int(qty_val)
 
-        # Starter kits don't have item details yet - show order number in yellow
+        # Parse inline properties
+        properties = parse_line_properties(properties_str)
+
+        # Starter kits: expand into individual items using properties
         if 'STARTER KIT' in lineitem_name.upper():
-            error_item = create_error_item(current_order, "Starter kit")
-            if error_item:
-                for _ in range(qty):
-                    items.append(error_item.copy())
+            starter_items = expand_starter_kit(order_num, properties, variant, qty)
+            items.extend(starter_items)
             continue
 
         # Custom images can't be printed - show order number in yellow instead
         if 'CUSTOM IMAGE' in lineitem_name.upper():
-            error_item = create_error_item(current_order, "Custom image")
+            error_item = create_error_item(order_num, "Custom image")
             if error_item:
                 for _ in range(qty):
                     items.append(error_item.copy())
             continue
+
+        # Handle custom items BEFORE flag/symbol checks (handles REQUEST A FLAG properly)
+        if is_custom_item(lineitem_name):
+            # Try inline properties first, fall back to custom_lookup
+            custom_text = get_custom_value_from_properties(properties)
+            if not custom_text and custom_lookup:
+                custom_text = get_custom_text(order_num, lineitem_name, custom_lookup)
+
+            if custom_text:
+                # Extract color from lineitem
+                text_color = 'BLACK'
+                if ' / ' in lineitem_name:
+                    color_part = lineitem_name.split(' / ')[-1].strip().upper()
+                    if color_part in ('BLACK', 'WHITE'):
+                        text_color = color_part
+
+                # REQUEST A FLAG: look up the actual flag SVG
+                if 'REQUEST A FLAG' in lineitem_name.upper():
+                    flag_name = custom_text.strip()
+                    flag_path = FLAG_LOOKUP.get(flag_name.lower())
+                    if flag_path and os.path.exists(flag_path):
+                        flag_height_pts = config.SIZE_MAP['Flags']['target_height_mm'] * config.MM_TO_PTS
+                        for _ in range(qty):
+                            items.append({
+                                'type': 'flag',
+                                'width': config.GRID_SIZE,
+                                'height': config.GRID_SIZE,
+                                'flag_path': flag_path,
+                                'flag_height_pts': flag_height_pts
+                            })
+                    else:
+                        error_item = create_error_item(order_num, f"Flag not found: {flag_name}")
+                        if error_item:
+                            for _ in range(qty):
+                                items.append(error_item.copy())
+                    continue
+
+                text = custom_text
+
+                # Determine sizing
+                if is_custom_initials_type(lineitem_name):
+                    size = 'Initials'
+                elif is_custom_number_type(lineitem_name):
+                    size = 'Initials'
+                elif is_custom_word_type(lineitem_name):
+                    size = 'Words'
+                else:
+                    size = determine_size_category(text)
+
+                size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
+                grid_squares = determine_grid_squares(text)
+                rect_width = grid_squares * config.GRID_SIZE
+                rect_height = config.GRID_SIZE
+
+                try:
+                    text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+                        text, config.FONT_PATH, size_cfg, rect_width, rect_height
+                    )
+                except Exception as e:
+                    safe_text = text.encode('ascii', 'replace').decode('ascii')
+                    print(f"Warning: Could not render text '{safe_text}' for order {order_num}")
+                    error_item = create_error_item(order_num, f"Cannot render: {safe_text}")
+                    if error_item:
+                        for _ in range(qty):
+                            items.append(error_item.copy())
+                    continue
+
+                for _ in range(qty):
+                    items.append({
+                        'type': 'sticker',
+                        'width': w,
+                        'height': h,
+                        'text_geo': text_geo,
+                        'bg_geo': bg_geo,
+                        'text_color': text_color
+                    })
+                continue
+            else:
+                # No custom value found
+                print(f"Warning: No custom value found for order {order_num}, item '{lineitem_name}'")
+                error_item = create_error_item(order_num, f"Missing custom value: {lineitem_name}")
+                if error_item:
+                    for _ in range(qty):
+                        items.append(error_item.copy())
+                continue
 
         # Check if this is a flag item
         if is_flag_item(lineitem_name):
@@ -432,7 +657,7 @@ def collect_items_from_csv(df, custom_lookup=None):
                     })
             else:
                 # Flag file not found - create error item in place
-                error_item = create_error_item(current_order, f"Flag not found: {lineitem_name}")
+                error_item = create_error_item(order_num, f"Flag not found: {lineitem_name}")
                 if error_item:
                     for _ in range(qty):
                         items.append(error_item.copy())
@@ -450,16 +675,21 @@ def collect_items_from_csv(df, custom_lookup=None):
                 # Check if this is a crown or heart (uses 8mm height)
                 is_crown_or_heart = 'CROWN' in upper_name or 'HEART' in upper_name
 
+                # INFINITY uses 2 grid squares wide
+                is_infinity = 'INFINITY' in upper_name
+
                 # Determine symbol size
                 if is_crown_or_heart:
                     symbol_size_pts = 8 * config.MM_TO_PTS  # 8mm height for crowns and hearts
                 else:
                     symbol_size_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS  # 10mm default
 
+                symbol_width = 2 * config.GRID_SIZE if is_infinity else config.GRID_SIZE
+
                 for _ in range(qty):
                     items.append({
                         'type': 'symbol',
-                        'width': config.GRID_SIZE,
+                        'width': symbol_width,
                         'height': config.GRID_SIZE,
                         'symbol_path': symbol_path,
                         'symbol_size_pts': symbol_size_pts,
@@ -467,13 +697,13 @@ def collect_items_from_csv(df, custom_lookup=None):
                     })
             else:
                 # Symbol file not found - create error item in place
-                error_item = create_error_item(current_order, f"Symbol not found: {lineitem_name}")
+                error_item = create_error_item(order_num, f"Symbol not found: {lineitem_name}")
                 if error_item:
                     for _ in range(qty):
                         items.append(error_item.copy())
             continue
 
-        # Extract text and color
+        # Extract text and color for regular text items
         text_color = 'BLACK'  # Default
         if ' - ' in lineitem_name:
             text = lineitem_name.split(' - ', 1)[1]
@@ -487,72 +717,25 @@ def collect_items_from_csv(df, custom_lookup=None):
         else:
             text = lineitem_name
 
-        # Check if this is a custom item that needs lookup
-        is_custom_flag = False
-        is_custom_initials = False
-        if is_custom_item(lineitem_name) and current_order and custom_lookup:
-            custom_text = get_custom_text(current_order, lineitem_name, custom_lookup)
-            if custom_text:
-                # For "REQUEST A FLAG" items, append " FLAG" to the custom value and use fluro yellow
-                if 'REQUEST A FLAG' in lineitem_name.upper():
-                    text = custom_text.upper() + " FLAG"
-                    text_color = 'FLURO_YELLOW'
-                    is_custom_flag = True
-                # Track CUSTOM INITIALS items to force 'Initials' size category
-                elif 'CUSTOM INITIALS' in lineitem_name.upper():
-                    text = custom_text
-                    is_custom_initials = True
-                else:
-                    text = custom_text
-            else:
-                print(f"Warning: No custom value found for order {current_order}, item '{lineitem_name}'")
-                # Create error item in place to maintain order
-                error_item = create_error_item(current_order, f"Missing custom value: {lineitem_name}")
-                if error_item:
-                    for _ in range(qty):
-                        items.append(error_item.copy())
-                continue
-
         if not text or text.strip() == '':
             continue
 
         # Determine size and geometry
-        # Custom types always use fixed sizing regardless of character count:
-        # - CUSTOM INITIALS -> 'Initials' (5mm)
-        # - All other custom types -> 'Words' (4mm)
-        if is_custom_initials_type(lineitem_name):
-            size = 'Initials'
-        elif is_custom_number_type(lineitem_name):
-            size = 'Initials'
-        elif is_custom_word_type(lineitem_name):
-            size = 'Words'
-        else:
-            size = determine_size_category(text)
+        size = determine_size_category(text)
         size_cfg = config.SIZE_MAP.get(size, config.SIZE_MAP['Words'])
-
-        # Custom flags always use 1 grid square with two-row layout
-        if is_custom_flag:
-            grid_squares = 1
-        else:
-            grid_squares = determine_grid_squares(text)
+        grid_squares = determine_grid_squares(text)
         rect_width = grid_squares * config.GRID_SIZE
         rect_height = config.GRID_SIZE
 
         try:
-            if is_custom_flag:
-                # Use two-row layout for custom flags
-                text_geo, bg_geo, w, h = geometry.create_two_row_sticker_geometry(
-                    text, config.FONT_PATH, size_cfg, rect_width, rect_height
-                )
-            else:
-                text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
-                    text, config.FONT_PATH, size_cfg, rect_width, rect_height
-                )
+            text_geo, bg_geo, w, h = geometry.create_sticker_geometry(
+                text, config.FONT_PATH, size_cfg, rect_width, rect_height
+            )
         except Exception as e:
             # Font doesn't support these characters - create error item in place
             safe_text = text.encode('ascii', 'replace').decode('ascii')
-            print(f"Warning: Could not render text '{safe_text}' for order {current_order}")
-            error_item = create_error_item(current_order, f"Cannot render: {safe_text}")
+            print(f"Warning: Could not render text '{safe_text}' for order {order_num}")
+            error_item = create_error_item(order_num, f"Cannot render: {safe_text}")
             if error_item:
                 for _ in range(qty):
                     items.append(error_item.copy())
@@ -636,43 +819,23 @@ def render_item(c, x, y, item, draw_cutting_border=True):
 
 
 def process_orders():
-    # 1. Find orders CSV files in orders/ subfolder
-    if not os.path.exists(config.ORDERS_DIR):
-        print(f"Orders directory not found: {config.ORDERS_DIR}")
+    """Process CSV files from input_csv/ directory (unified Shopify format)."""
+    if not os.path.exists(config.INPUT_DIR):
+        print(f"Input directory not found: {config.INPUT_DIR}")
         return
 
-    input_files = [f for f in os.listdir(config.ORDERS_DIR) if f.endswith('.csv')]
+    input_files = [f for f in os.listdir(config.INPUT_DIR)
+                   if f.endswith('.csv') and os.path.isfile(os.path.join(config.INPUT_DIR, f))]
 
     if not input_files:
-        print("No CSV files found in input_csv/orders/")
+        print("No CSV files found in input_csv/")
         return
-
-    # 2. Load custom lookup from custom/ subfolder
-    custom_lookup = {}
-    if os.path.exists(config.CUSTOM_DIR):
-        custom_files = [f for f in os.listdir(config.CUSTOM_DIR) if f.endswith('.csv')]
-        for custom_file in custom_files:
-            custom_path = os.path.join(config.CUSTOM_DIR, custom_file)
-            print(f"Loading custom values from {custom_file}...")
-            file_lookup = load_custom_lookup(custom_path)
-            # Merge lists properly (extend existing lists rather than overwrite)
-            for key, values in file_lookup.items():
-                if key in custom_lookup:
-                    custom_lookup[key].extend(values)
-                else:
-                    custom_lookup[key] = values
-            # Count total values across all lists
-            total_values = sum(len(v) for v in file_lookup.values())
-            print(f"  Loaded {total_values} custom values")
-
-    if not custom_lookup:
-        print("Warning: No custom CSV files found in input_csv/custom/ - custom items will use placeholder text")
 
     for csv_file in input_files:
         print(f"Processing {csv_file}...")
 
         # Setup paths
-        input_path = os.path.join(config.ORDERS_DIR, csv_file)
+        input_path = os.path.join(config.INPUT_DIR, csv_file)
         output_filename_with_border = csv_file.replace('.csv', '_gangsheet.pdf')
         output_filename_no_border = csv_file.replace('.csv', '_gangsheet_no_border.pdf')
         output_path_with_border = os.path.join(config.OUTPUT_DIR, output_filename_with_border)
@@ -681,8 +844,8 @@ def process_orders():
         # Load Data (utf-8-sig preserves accented characters)
         df = pd.read_csv(input_path, encoding='utf-8-sig')
 
-        # Phase 1: Collect all items (with custom lookup)
-        items = collect_items_from_csv(df, custom_lookup)
+        # Collect all items (custom values are inline in properties)
+        items = collect_items_from_csv(df)
         print(f"  Collected {len(items)} items")
 
         # Count by size for stats
@@ -694,13 +857,13 @@ def process_orders():
         if error_count > 0:
             print(f"  Error items (fluro yellow): {error_count}")
 
-        # Phase 2: Layout to determine total height
+        # Layout to determine total height
         layout_mgr = layout.OptimizedLayoutManager()
         placed_items = layout_mgr.place_items(items)
         sheet_height = layout_mgr.total_height
         print(f"  Sheet size: {config.PAGE_WIDTH / config.MM_TO_PTS:.0f} x {sheet_height / config.MM_TO_PTS:.0f} mm")
 
-        # Phase 3: Create canvases with dynamic height and render
+        # Create canvases with dynamic height and render
         c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, sheet_height))
         c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, sheet_height))
 

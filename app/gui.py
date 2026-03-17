@@ -50,8 +50,8 @@ class App(TkinterDnDCustomTk):
 
         # Window setup
         self.title("Shopify Gang Sheet Generator")
-        self.geometry("600x520")
-        self.minsize(500, 480)
+        self.geometry("500x480")
+        self.minsize(400, 420)
 
         # Theme
         ctk.set_appearance_mode("dark")
@@ -62,7 +62,6 @@ class App(TkinterDnDCustomTk):
 
         # Store selected files
         self.orders_files = []
-        self.custom_file = None
 
         # Build UI
         self._create_widgets()
@@ -73,8 +72,7 @@ class App(TkinterDnDCustomTk):
     def _create_widgets(self):
         # Main container
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(3, weight=1)  # Drop zones row expands
+        self.grid_rowconfigure(3, weight=1)  # Drop zone row expands
 
         # Title
         title_label = ctk.CTkLabel(
@@ -82,18 +80,17 @@ class App(TkinterDnDCustomTk):
             text="Orders to Gangsheet",
             font=ctk.CTkFont(size=24, weight="bold")
         )
-        title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 10))
+        title_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         # Separator line
         separator = ctk.CTkFrame(self, height=2, fg_color="gray30")
-        separator.grid(row=1, column=0, columnspan=2, padx=40, pady=(0, 10), sticky="ew")
+        separator.grid(row=1, column=0, padx=40, pady=(0, 10), sticky="ew")
 
         # Instructions
         instructions_text = (
             "How to use:\n"
             "1) Drop or browse for Shopify Orders CSV file(s)\n"
-            "2) Optionally add a Custom CSV for personalised values\n"
-            "3) Click Generate to create gang sheets"
+            "2) Click Generate to create gang sheets"
         )
         instructions_label = ctk.CTkLabel(
             self,
@@ -102,11 +99,11 @@ class App(TkinterDnDCustomTk):
             text_color="gray",
             justify="left"
         )
-        instructions_label.grid(row=2, column=0, columnspan=2, padx=20, pady=(0, 10))
+        instructions_label.grid(row=2, column=0, padx=20, pady=(0, 10))
 
-        # Orders CSV drop zone (left)
+        # Orders CSV drop zone (full width)
         self.orders_frame = ctk.CTkFrame(self, corner_radius=15)
-        self.orders_frame.grid(row=3, column=0, padx=(20, 10), pady=10, sticky="nsew")
+        self.orders_frame.grid(row=3, column=0, padx=20, pady=10, sticky="nsew")
         self.orders_frame.grid_columnconfigure(0, weight=1)
         self.orders_frame.grid_rowconfigure(0, weight=1)
 
@@ -121,32 +118,10 @@ class App(TkinterDnDCustomTk):
         # Bind drag-and-drop for orders
         self.orders_frame.drop_target_register(DND_FILES)
         self.orders_frame.dnd_bind('<<Drop>>', self._on_drop_orders)
-        self.orders_frame.dnd_bind('<<DragEnter>>', lambda e: self._on_drag_enter(e, 'orders'))
-        self.orders_frame.dnd_bind('<<DragLeave>>', lambda e: self._on_drag_leave(e, 'orders'))
+        self.orders_frame.dnd_bind('<<DragEnter>>', self._on_drag_enter)
+        self.orders_frame.dnd_bind('<<DragLeave>>', self._on_drag_leave)
         self.orders_frame.bind("<Button-1>", self._browse_orders)
         self.orders_label.bind("<Button-1>", self._browse_orders)
-
-        # Custom CSV drop zone (right)
-        self.custom_frame = ctk.CTkFrame(self, corner_radius=15)
-        self.custom_frame.grid(row=3, column=1, padx=(10, 20), pady=10, sticky="nsew")
-        self.custom_frame.grid_columnconfigure(0, weight=1)
-        self.custom_frame.grid_rowconfigure(0, weight=1)
-
-        self.custom_label = ctk.CTkLabel(
-            self.custom_frame,
-            text="Custom CSV\n(Optional)\n\nDrop or click",
-            font=ctk.CTkFont(size=14),
-            text_color="gray"
-        )
-        self.custom_label.grid(row=0, column=0, padx=20, pady=30)
-
-        # Bind drag-and-drop for custom
-        self.custom_frame.drop_target_register(DND_FILES)
-        self.custom_frame.dnd_bind('<<Drop>>', self._on_drop_custom)
-        self.custom_frame.dnd_bind('<<DragEnter>>', lambda e: self._on_drag_enter(e, 'custom'))
-        self.custom_frame.dnd_bind('<<DragLeave>>', lambda e: self._on_drag_leave(e, 'custom'))
-        self.custom_frame.bind("<Button-1>", self._browse_custom)
-        self.custom_label.bind("<Button-1>", self._browse_custom)
 
         # Generate button
         self.generate_btn = ctk.CTkButton(
@@ -156,7 +131,7 @@ class App(TkinterDnDCustomTk):
             font=ctk.CTkFont(size=16, weight="bold"),
             height=40
         )
-        self.generate_btn.grid(row=4, column=0, columnspan=2, padx=20, pady=(10, 5))
+        self.generate_btn.grid(row=4, column=0, padx=20, pady=(10, 5))
 
         # Status label
         self.status_label = ctk.CTkLabel(
@@ -164,11 +139,11 @@ class App(TkinterDnDCustomTk):
             text="Select an Orders CSV to get started",
             font=ctk.CTkFont(size=14)
         )
-        self.status_label.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 5))
+        self.status_label.grid(row=5, column=0, padx=20, pady=(0, 5))
 
         # Progress bar
         self.progress = ctk.CTkProgressBar(self)
-        self.progress.grid(row=6, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="ew")
+        self.progress.grid(row=6, column=0, padx=20, pady=(0, 10), sticky="ew")
         self.progress.set(0)
 
         # Open folder button
@@ -180,34 +155,26 @@ class App(TkinterDnDCustomTk):
             border_width=1,
             text_color=("gray10", "gray90")
         )
-        self.open_folder_btn.grid(row=7, column=0, columnspan=2, padx=20, pady=(0, 10))
+        self.open_folder_btn.grid(row=7, column=0, padx=20, pady=(0, 10))
 
         # Footer with licensing
         footer_label = ctk.CTkLabel(
             self,
-            text="© 2026 Bootink. All rights reserved.",
+            text="\u00a9 2026 Bootink. All rights reserved.",
             font=ctk.CTkFont(size=10),
             text_color="gray50"
         )
-        footer_label.grid(row=8, column=0, columnspan=2, padx=20, pady=(5, 15))
+        footer_label.grid(row=8, column=0, padx=20, pady=(5, 15))
 
-    def _on_drag_enter(self, event, zone='orders'):
+    def _on_drag_enter(self, event):
         """Visual feedback when dragging over."""
-        if zone == 'orders':
-            self.orders_frame.configure(border_width=3, border_color="#3B8ED0")
-            self.orders_label.configure(text="Drop here!", text_color="#3B8ED0")
-        else:
-            self.custom_frame.configure(border_width=3, border_color="#3B8ED0")
-            self.custom_label.configure(text="Drop here!", text_color="#3B8ED0")
+        self.orders_frame.configure(border_width=3, border_color="#3B8ED0")
+        self.orders_label.configure(text="Drop here!", text_color="#3B8ED0")
 
-    def _on_drag_leave(self, event, zone='orders'):
+    def _on_drag_leave(self, event):
         """Reset visual state."""
-        if zone == 'orders':
-            self.orders_frame.configure(border_width=0)
-            self._update_orders_label()
-        else:
-            self.custom_frame.configure(border_width=0)
-            self._update_custom_label()
+        self.orders_frame.configure(border_width=0)
+        self._update_orders_label()
 
     def _update_orders_label(self):
         """Update orders label based on current selection."""
@@ -223,26 +190,9 @@ class App(TkinterDnDCustomTk):
                 text_color="gray"
             )
 
-    def _update_custom_label(self):
-        """Update custom label based on current selection."""
-        if self.custom_file:
-            filename = os.path.basename(self.custom_file)
-            # Truncate long filenames
-            if len(filename) > 20:
-                filename = filename[:17] + "..."
-            self.custom_label.configure(
-                text=f"{filename}\n\nClick to change",
-                text_color="green"
-            )
-        else:
-            self.custom_label.configure(
-                text="Custom CSV\n(Optional)\n\nDrop or click",
-                text_color="gray"
-            )
-
     def _on_drop_orders(self, event):
         """Handle dropped orders files."""
-        self._on_drag_leave(event, 'orders')
+        self._on_drag_leave(event)
         files = self._parse_drop_data(event.data)
         csv_files = [f for f in files if f.lower().endswith('.csv')]
         if csv_files:
@@ -250,29 +200,13 @@ class App(TkinterDnDCustomTk):
             self._update_orders_label()
             self._update_status()
 
-    def _on_drop_custom(self, event):
-        """Handle dropped custom file."""
-        self._on_drag_leave(event, 'custom')
-        files = self._parse_drop_data(event.data)
-        csv_files = [f for f in files if f.lower().endswith('.csv')]
-        if csv_files:
-            self.custom_file = csv_files[0]  # Only use first file
-            self._update_custom_label()
-            self._update_status()
-
     def _update_status(self):
         """Update status based on current selections."""
         if self.orders_files:
-            if self.custom_file:
-                self.status_label.configure(
-                    text="Ready to generate!",
-                    text_color="orange"
-                )
-            else:
-                self.status_label.configure(
-                    text="Ready (custom values will use placeholders)",
-                    text_color="orange"
-                )
+            self.status_label.configure(
+                text="Ready to generate!",
+                text_color="orange"
+            )
         else:
             self.status_label.configure(
                 text="Select an Orders CSV to get started",
@@ -308,18 +242,6 @@ class App(TkinterDnDCustomTk):
             self._update_orders_label()
             self._update_status()
 
-    def _browse_custom(self, event=None):
-        """Open file dialog to select custom CSV file."""
-        from tkinter import filedialog
-        file = filedialog.askopenfilename(
-            title="Select Custom CSV File",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
-        )
-        if file:
-            self.custom_file = file
-            self._update_custom_label()
-            self._update_status()
-
     def _generate(self):
         """Start generation process."""
         if not self.orders_files:
@@ -332,7 +254,6 @@ class App(TkinterDnDCustomTk):
         # Disable buttons during processing
         self.generate_btn.configure(state="disabled")
         self.orders_label.configure(text="Processing...", text_color="orange")
-        self.custom_label.configure(text="Processing...", text_color="orange")
 
         # Start simulated progress animation
         self._simulated_progress = 0
@@ -349,24 +270,13 @@ class App(TkinterDnDCustomTk):
         total = len(self.orders_files)
         errors = []
 
-        # Load custom lookup if custom file is provided
-        custom_lookup = {}
-        if self.custom_file:
-            try:
-                self.msg_queue.put(('status', "Loading custom values..."))
-                custom_lookup = pipeline.load_custom_lookup(self.custom_file)
-                total_values = sum(len(v) for v in custom_lookup.values())
-                self.msg_queue.put(('status', f"Loaded {total_values} custom values"))
-            except Exception as e:
-                self.msg_queue.put(('status', f"Warning: Could not load custom CSV: {e}"))
-
         for i, csv_path in enumerate(self.orders_files):
             try:
                 filename = os.path.basename(csv_path)
                 self.msg_queue.put(('status', f"Processing: {filename}"))
 
-                # Process the CSV
-                self._process_single_csv(csv_path, custom_lookup)
+                # Process the CSV (custom values are inline in the unified format)
+                self._process_single_csv(csv_path)
 
                 self.msg_queue.put(('progress', (i + 1) / total))
 
@@ -375,11 +285,9 @@ class App(TkinterDnDCustomTk):
 
         self.msg_queue.put(('done', errors))
 
-    def _process_single_csv(self, csv_path, custom_lookup=None):
+    def _process_single_csv(self, csv_path):
         """Process a single CSV file."""
         import pandas as pd
-        from shapely import affinity
-        from reportlab.lib.colors import CMYKColor
         from src import pdf_utils, layout
 
         # Reload flag lookup (in case paths changed)
@@ -397,8 +305,8 @@ class App(TkinterDnDCustomTk):
         # Load data (utf-8-sig preserves accented characters)
         df = pd.read_csv(csv_path, encoding='utf-8-sig')
 
-        # Collect items with custom lookup
-        items = pipeline.collect_items_from_csv(df, custom_lookup)
+        # Collect items (custom values are inline in properties)
+        items = pipeline.collect_items_from_csv(df)
 
         # Layout to determine total height
         layout_mgr = layout.OptimizedLayoutManager()
@@ -459,7 +367,6 @@ class App(TkinterDnDCustomTk):
 
         # Reset labels
         self._update_orders_label()
-        self._update_custom_label()
 
         self.progress.set(1)
 
