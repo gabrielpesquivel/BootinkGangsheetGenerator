@@ -400,7 +400,7 @@ def determine_grid_squares(text):
     char_count = len(text.strip())
     if char_count <= 5:
         return 1  # 25mm
-    elif char_count <= 14:
+    elif char_count <= 13:
         return 2  # 50mm
     else:
         return 3  # 75mm
@@ -538,7 +538,11 @@ def collect_items_from_csv(df, custom_lookup=None):
         if 'Shipping' in lineitem_name:
             continue
 
-        qty = 1 if pd.isna(qty_val) else int(qty_val)
+        # Skip rows with no quantity (e.g., discount codes like "252footy")
+        if pd.isna(qty_val) or str(qty_val).strip() == '':
+            continue
+
+        qty = int(qty_val)
 
         # Parse inline properties
         properties = parse_line_properties(properties_str)
@@ -678,6 +682,9 @@ def collect_items_from_csv(df, custom_lookup=None):
                 # Check if this is a crown or heart (uses 8mm height)
                 is_crown_or_heart = 'CROWN' in upper_name or 'HEART' in upper_name
 
+                # Check if this SVG contains embedded raster images (e.g., emojis)
+                is_raster = pdf_utils._is_raster_svg(symbol_path)
+
                 # Determine symbol size
                 if is_crown_or_heart:
                     symbol_size_pts = 8 * config.MM_TO_PTS  # 8mm height for crowns and hearts
@@ -693,7 +700,8 @@ def collect_items_from_csv(df, custom_lookup=None):
                         'height': config.GRID_SIZE,
                         'symbol_path': symbol_path,
                         'symbol_size_pts': symbol_size_pts,
-                        'use_width_sizing': is_halo or is_infinity or is_ichthys  # Halo, infinity, and ichthys use width, others use height
+                        'use_width_sizing': is_halo or is_infinity or is_ichthys,  # Halo, infinity, and ichthys use width, others use height
+                        'is_raster': is_raster,
                     })
             else:
                 # Symbol file not found - create error item in place
@@ -771,8 +779,21 @@ def render_item(c, x, y, item, draw_cutting_border=True):
 
     elif item['type'] == 'symbol':
         # Get symbol dimensions for centering
-        # Halo uses width-based sizing, other symbols use height-based
-        if item.get('use_width_sizing'):
+        is_raster = item.get('is_raster', False)
+
+        if is_raster:
+            # Raster SVGs (e.g., emojis with embedded PNGs) - render directly to preserve transparency
+            if item.get('use_width_sizing'):
+                svg_w, svg_h = pdf_utils.get_raster_svg_dimensions_by_width(item['symbol_path'], item['symbol_size_pts'])
+                center_x = x + (w - svg_w) / 2
+                center_y = y + (h - svg_h) / 2
+                pdf_utils.draw_raster_svg_by_width(c, item['symbol_path'], center_x, center_y, item['symbol_size_pts'])
+            else:
+                svg_w, svg_h = pdf_utils.get_raster_svg_dimensions(item['symbol_path'], item['symbol_size_pts'])
+                center_x = x + (w - svg_w) / 2
+                center_y = y + (h - svg_h) / 2
+                pdf_utils.draw_raster_svg(c, item['symbol_path'], center_x, center_y, item['symbol_size_pts'])
+        elif item.get('use_width_sizing'):
             svg_w, svg_h = pdf_utils.get_svg_dimensions_by_width(item['symbol_path'], item['symbol_size_pts'])
             center_x = x + (w - svg_w) / 2
             center_y = y + (h - svg_h) / 2

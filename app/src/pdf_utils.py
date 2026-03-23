@@ -1,7 +1,114 @@
+import base64
+import io
+import xml.etree.ElementTree as ET
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import CMYKColor, magenta
+from reportlab.lib.utils import ImageReader
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
+
+
+def _is_raster_svg(svg_path):
+    """Check if an SVG contains embedded raster images (e.g., base64 PNGs)."""
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
+    # Check for <image> tags (with or without SVG namespace)
+    for elem in root.iter():
+        tag = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
+        if tag == 'image':
+            return True
+    return False
+
+
+def _extract_raster_from_svg(svg_path):
+    """
+    Extract the embedded raster image and viewBox dimensions from an SVG.
+
+    Returns:
+        (PIL.Image, viewbox_width, viewbox_height) or (None, 0, 0) on failure
+    """
+    from PIL import Image
+
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
+
+    # Get viewBox dimensions
+    viewbox = root.get('viewBox', '')
+    if viewbox:
+        parts = viewbox.split()
+        vb_width = float(parts[2])
+        vb_height = float(parts[3])
+    else:
+        vb_width = float(root.get('width', '0'))
+        vb_height = float(root.get('height', '0'))
+
+    # Find the <image> element and extract base64 data
+    for elem in root.iter():
+        tag = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
+        if tag == 'image':
+            # href can be in xlink:href or href
+            href = None
+            for attr_name, attr_value in elem.attrib.items():
+                if attr_name.endswith('href') and 'base64,' in attr_value:
+                    href = attr_value
+                    break
+
+            if href:
+                b64_data = href.split('base64,', 1)[1]
+                img_data = base64.b64decode(b64_data)
+                img = Image.open(io.BytesIO(img_data))
+                return img, vb_width, vb_height
+
+    return None, 0, 0
+
+
+def _draw_raster_image(c, img, x, y, target_width, target_height):
+    """Draw a PIL Image onto the ReportLab canvas with transparency."""
+    img_reader = ImageReader(img)
+    c.drawImage(img_reader, x, y, width=target_width, height=target_height, mask='auto')
+
+
+def get_raster_svg_dimensions(svg_path, target_height_pts):
+    """Get dimensions of a raster SVG when scaled to a target height."""
+    _, vb_width, vb_height = _extract_raster_from_svg(svg_path)
+    if vb_height == 0:
+        return 0, 0
+    scale = target_height_pts / vb_height
+    return vb_width * scale, vb_height * scale
+
+
+def get_raster_svg_dimensions_by_width(svg_path, target_width_pts):
+    """Get dimensions of a raster SVG when scaled to a target width."""
+    _, vb_width, vb_height = _extract_raster_from_svg(svg_path)
+    if vb_width == 0:
+        return 0, 0
+    scale = target_width_pts / vb_width
+    return vb_width * scale, vb_height * scale
+
+
+def draw_raster_svg(c, svg_path, x, y, target_height_pts):
+    """Draw a raster SVG scaled to target height, preserving transparency."""
+    img, vb_width, vb_height = _extract_raster_from_svg(svg_path)
+    if img is None:
+        return 0, 0
+    scale = target_height_pts / vb_height
+    w = vb_width * scale
+    h = vb_height * scale
+    _draw_raster_image(c, img, x, y, w, h)
+    return w, h
+
+
+def draw_raster_svg_by_width(c, svg_path, x, y, target_width_pts):
+    """Draw a raster SVG scaled to target width, preserving transparency."""
+    img, vb_width, vb_height = _extract_raster_from_svg(svg_path)
+    if img is None:
+        return 0, 0
+    scale = target_width_pts / vb_width
+    w = vb_width * scale
+    h = vb_height * scale
+    _draw_raster_image(c, img, x, y, w, h)
+    return w, h
 
 def get_svg_dimensions(svg_path, target_height_pts):
     """
