@@ -669,14 +669,12 @@ def collect_items_from_csv(df, custom_lookup=None):
             if symbol_path:
                 upper_name = lineitem_name.upper()
 
-                # Check if this is a halo symbol (uses width-based sizing at 10mm)
+                # Check if this is a halo or infinity symbol (uses width-based sizing at 10mm)
                 is_halo = 'HALO' in upper_name
+                is_infinity = 'INFINITY' in upper_name
 
                 # Check if this is a crown or heart (uses 8mm height)
                 is_crown_or_heart = 'CROWN' in upper_name or 'HEART' in upper_name
-
-                # INFINITY uses 2 grid squares wide
-                is_infinity = 'INFINITY' in upper_name
 
                 # Determine symbol size
                 if is_crown_or_heart:
@@ -684,7 +682,7 @@ def collect_items_from_csv(df, custom_lookup=None):
                 else:
                     symbol_size_pts = config.SIZE_MAP['Symbols']['target_height_mm'] * config.MM_TO_PTS  # 10mm default
 
-                symbol_width = 2 * config.GRID_SIZE if is_infinity else config.GRID_SIZE
+                symbol_width = config.GRID_SIZE
 
                 for _ in range(qty):
                     items.append({
@@ -693,7 +691,7 @@ def collect_items_from_csv(df, custom_lookup=None):
                         'height': config.GRID_SIZE,
                         'symbol_path': symbol_path,
                         'symbol_size_pts': symbol_size_pts,
-                        'use_width_sizing': is_halo  # Halo uses width, others use height
+                        'use_width_sizing': is_halo or is_infinity  # Halo and infinity use width, others use height
                     })
             else:
                 # Symbol file not found - create error item in place
