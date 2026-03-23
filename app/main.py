@@ -15,6 +15,7 @@ SYMBOL_CATEGORY_MAP = {
     'Animals': 'animals',
     'Popular Symbols': 'popular',
     'Religious Icons': 'religious',
+    'Emojis': 'emojis',
 }
 
 # Build a lookup of all available flags (lowercase country name -> full path)
@@ -669,9 +670,10 @@ def collect_items_from_csv(df, custom_lookup=None):
             if symbol_path:
                 upper_name = lineitem_name.upper()
 
-                # Check if this is a halo or infinity symbol (uses width-based sizing at 10mm)
+                # Check if this is a halo, infinity, or ichthys symbol (uses width-based sizing at 10mm)
                 is_halo = 'HALO' in upper_name
                 is_infinity = 'INFINITY' in upper_name
+                is_ichthys = 'ICHTHYS' in upper_name
 
                 # Check if this is a crown or heart (uses 8mm height)
                 is_crown_or_heart = 'CROWN' in upper_name or 'HEART' in upper_name
@@ -691,7 +693,7 @@ def collect_items_from_csv(df, custom_lookup=None):
                         'height': config.GRID_SIZE,
                         'symbol_path': symbol_path,
                         'symbol_size_pts': symbol_size_pts,
-                        'use_width_sizing': is_halo or is_infinity  # Halo and infinity use width, others use height
+                        'use_width_sizing': is_halo or is_infinity or is_ichthys  # Halo, infinity, and ichthys use width, others use height
                     })
             else:
                 # Symbol file not found - create error item in place
