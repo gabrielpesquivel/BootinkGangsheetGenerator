@@ -1,64 +1,99 @@
 import base64
 import io
+import shutil
+import subprocess
 import xml.etree.ElementTree as ET
 
+from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import CMYKColor, magenta
 from reportlab.lib.utils import ImageReader
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
 
+# Pixels per SVG unit when rasterising gradient SVGs
+_RASTER_SCALE = 8
 
-def _is_raster_svg(svg_path):
-    """Check if an SVG contains embedded raster images (e.g., base64 PNGs)."""
+# Locate rsvg-convert once at import time
+_RSVG_CONVERT = shutil.which('rsvg-convert')
+
+
+def _rasterize_svg(svg_path):
+    """Rasterize an SVG to a PIL Image using rsvg-convert, preserving transparency."""
+    if not _RSVG_CONVERT:
+        return None
+    result = subprocess.run(
+        [_RSVG_CONVERT, '-z', str(_RASTER_SCALE), '--format=png', svg_path],
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        return None
+    return Image.open(io.BytesIO(result.stdout))
+
+
+def _get_svg_viewbox(svg_path):
+    """Get the viewBox (or width/height) dimensions of an SVG."""
     tree = ET.parse(svg_path)
     root = tree.getroot()
-    # Check for <image> tags (with or without SVG namespace)
+    viewbox = root.get('viewBox', '')
+    if viewbox:
+        parts = viewbox.split()
+        return float(parts[2]), float(parts[3])
+    w = root.get('width', '0')
+    h = root.get('height', '0')
+    w = float(''.join(c for c in w if c.isdigit() or c == '.') or '0')
+    h = float(''.join(c for c in h if c.isdigit() or c == '.') or '0')
+    return w, h
+
+
+def _is_raster_svg(svg_path):
+    """Check if an SVG needs raster rendering (embedded images or gradients)."""
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
     for elem in root.iter():
         tag = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
         if tag == 'image':
+            return True
+        if tag in ('linearGradient', 'radialGradient'):
             return True
     return False
 
 
 def _extract_raster_from_svg(svg_path):
     """
-    Extract the embedded raster image and viewBox dimensions from an SVG.
+    Extract or rasterize an SVG to a PIL Image with viewBox dimensions.
+
+    For SVGs with embedded <image> tags, extracts the base64 image directly.
+    For SVGs with gradients, rasterizes via cairosvg to preserve gradient rendering.
 
     Returns:
         (PIL.Image, viewbox_width, viewbox_height) or (None, 0, 0) on failure
     """
-    from PIL import Image
-
     tree = ET.parse(svg_path)
     root = tree.getroot()
 
     # Get viewBox dimensions
-    viewbox = root.get('viewBox', '')
-    if viewbox:
-        parts = viewbox.split()
-        vb_width = float(parts[2])
-        vb_height = float(parts[3])
-    else:
-        vb_width = float(root.get('width', '0'))
-        vb_height = float(root.get('height', '0'))
+    vb_width, vb_height = _get_svg_viewbox(svg_path)
 
-    # Find the <image> element and extract base64 data
+    # First try: extract embedded <image> (base64 PNGs)
     for elem in root.iter():
         tag = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
         if tag == 'image':
-            # href can be in xlink:href or href
             href = None
             for attr_name, attr_value in elem.attrib.items():
                 if attr_name.endswith('href') and 'base64,' in attr_value:
                     href = attr_value
                     break
-
             if href:
                 b64_data = href.split('base64,', 1)[1]
                 img_data = base64.b64decode(b64_data)
                 img = Image.open(io.BytesIO(img_data))
                 return img, vb_width, vb_height
+
+    # Fallback: rasterize the full SVG via cairosvg (handles gradients)
+    img = _rasterize_svg(svg_path)
+    if img:
+        return img, vb_width, vb_height
 
     return None, 0, 0
 
