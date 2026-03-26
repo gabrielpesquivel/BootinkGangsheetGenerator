@@ -857,10 +857,8 @@ def process_orders():
 
         # Setup paths
         input_path = os.path.join(config.INPUT_DIR, csv_file)
-        output_filename_with_border = csv_file.replace('.csv', '_gangsheet.pdf')
-        output_filename_no_border = csv_file.replace('.csv', '_gangsheet_no_border.pdf')
-        output_path_with_border = os.path.join(config.OUTPUT_DIR, output_filename_with_border)
-        output_path_no_border = os.path.join(config.OUTPUT_DIR, output_filename_no_border)
+        output_filename = csv_file.replace('.csv', '_gangsheet.pdf')
+        output_path = os.path.join(config.OUTPUT_DIR, output_filename)
 
         # Load Data (utf-8-sig preserves accented characters)
         df = pd.read_csv(input_path, encoding='utf-8-sig')
@@ -884,19 +882,15 @@ def process_orders():
         sheet_height = layout_mgr.total_height
         print(f"  Sheet size: {config.PAGE_WIDTH / config.MM_TO_PTS:.0f} x {sheet_height / config.MM_TO_PTS:.0f} mm")
 
-        # Create canvases with dynamic height and render
-        c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, sheet_height))
-        c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, sheet_height))
+        # Create canvas with dynamic height and render
+        c = pdf_utils.setup_canvas(output_path, (config.PAGE_WIDTH, sheet_height))
 
         for x, y, page, item in placed_items:
-            render_item(c_with_border, x, y, item, draw_cutting_border=True)
-            render_item(c_no_border, x, y, item, draw_cutting_border=False)
+            render_item(c, x, y, item, draw_cutting_border=True)
 
-        # Save both PDFs
-        c_with_border.save()
-        c_no_border.save()
-        print(f"  Saved: {output_path_with_border}")
-        print(f"  Saved: {output_path_no_border}")
+        # Save PDF
+        c.save()
+        print(f"  Saved: {output_path}")
 
 if __name__ == "__main__":    
     if not os.path.exists(config.FONT_PATH):

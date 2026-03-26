@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import CMYKColor, magenta
+from reportlab.lib.colors import CMYKColor
 from reportlab.lib.utils import ImageReader
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
@@ -194,7 +194,9 @@ def setup_canvas(output_path, page_size):
 
 def draw_cutting_rectangle(c, x, y, width, height):
     """
-    Draw a thin magenta rectangle for cutting machine.
+    Draw a thin magenta rectangle for cutting machine at 0% opacity.
+    The path data is preserved in the PDF for cutting software to detect,
+    but is invisible to the human eye.
 
     Args:
         c: ReportLab canvas
@@ -204,7 +206,7 @@ def draw_cutting_rectangle(c, x, y, width, height):
         height: Rectangle height in points
     """
     c.saveState()
-    c.setStrokeColor(magenta)  # Magenta color for cutting machine
+    c.setStrokeColor(CMYKColor(0, 1, 0, 0, alpha=0))  # Magenta at 0% opacity
     c.setLineWidth(0.5)  # Thin line (0.5 points)
     c.rect(x, y, width, height, fill=0, stroke=1)
     c.restoreState()

@@ -299,8 +299,7 @@ class App(TkinterDnDCustomTk):
         order_folder = os.path.join(config.OUTPUT_DIR, order_name)
         os.makedirs(order_folder, exist_ok=True)
 
-        output_path_with_border = os.path.join(order_folder, 'gangsheet.pdf')
-        output_path_no_border = os.path.join(order_folder, 'gangsheet_no_border.pdf')
+        output_path = os.path.join(order_folder, 'gangsheet.pdf')
 
         # Load data (utf-8-sig preserves accented characters)
         df = pd.read_csv(csv_path, encoding='utf-8-sig')
@@ -313,17 +312,14 @@ class App(TkinterDnDCustomTk):
         placed_items = layout_mgr.place_items(items)
         sheet_height = layout_mgr.total_height
 
-        # Create canvases with dynamic height and render
-        c_with_border = pdf_utils.setup_canvas(output_path_with_border, (config.PAGE_WIDTH, sheet_height))
-        c_no_border = pdf_utils.setup_canvas(output_path_no_border, (config.PAGE_WIDTH, sheet_height))
+        # Create canvas with dynamic height and render
+        c = pdf_utils.setup_canvas(output_path, (config.PAGE_WIDTH, sheet_height))
 
         for x, y, page, item in placed_items:
-            pipeline.render_item(c_with_border, x, y, item, draw_cutting_border=True)
-            pipeline.render_item(c_no_border, x, y, item, draw_cutting_border=False)
+            pipeline.render_item(c, x, y, item, draw_cutting_border=True)
 
-        # Save both PDFs
-        c_with_border.save()
-        c_no_border.save()
+        # Save PDF
+        c.save()
 
     def _animate_progress(self):
         """Animate the progress bar slowly while processing."""
