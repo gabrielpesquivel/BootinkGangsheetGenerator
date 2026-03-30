@@ -1,66 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 28.35 27.6">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25.52 17.01">
   <defs>
     <style>
-      .cls-1 {
-        fill: #fff;
-      }
-
-      .cls-2 {
-        fill: #fdb71d;
-      }
-
-      .cls-3 {
-        fill: none;
-      }
-
-      .cls-4 {
-        clip-path: url(#clippath-1);
-      }
-
-      .cls-5 {
-        fill: #e13d31;
-      }
-
-      .cls-6 {
-        fill: #010101;
-      }
-
-      .cls-7 {
-        fill: #05784a;
-      }
-
-      .cls-8 {
-        fill: #29317d;
-      }
-
-      .cls-9 {
-        clip-path: url(#clippath);
-      }
+      .cls-1 { fill: #fff; }
+      .cls-2 { fill: #fdb71d; }
+      .cls-5 { fill: #e13d31; }
+      .cls-6 { fill: #010101; }
+      .cls-7 { fill: #05784a; }
+      .cls-8 { fill: #29317d; }
     </style>
-    <clipPath id="clippath">
-      <rect class="cls-3" x="2.83" y="5.3" width="25.51" height="17.01"/>
-    </clipPath>
-    <clipPath id="clippath-1">
-      <polygon class="cls-3" points="2.83 5.3 15.59 13.8 2.83 22.3 2.83 5.3"/>
-    </clipPath>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
-      <path class="cls-5" d="M2.83,5.3h25.51v8.5h-12.76L2.83,5.3Z"/>
-      <path class="cls-8" d="M2.83,22.3h25.51v-8.5h-12.76L2.83,22.3Z"/>
-      <g class="cls-9">
-        <g>
-          <path class="cls-1" d="M0,27.6V0l16.45,10.97h11.9v5.67h-11.9L0,27.6ZM5.67,10.59v6.41l4.81-3.21-4.81-3.21Z"/>
-          <g class="cls-4">
-            <g>
-              <path class="cls-6" d="M2.83,5.3l12.76,8.5L2.83,22.3"/>
-              <polygon class="cls-2" points="4.41 24.66 1.26 19.95 10.48 13.8 1.26 7.66 4.41 2.94 20.7 13.8 4.41 24.66"/>
-            </g>
-          </g>
-          <polygon class="cls-7" points="3.78 23.72 1.89 20.89 12.52 13.8 1.89 6.71 3.78 3.88 16.11 12.1 28.35 12.1 28.35 15.5 16.11 15.5 3.78 23.72"/>
-        </g>
-      </g>
+      <path class="cls-5" d="M0.0,0.0h25.51v8.5h-12.76L0.0,0.0Z"/>
+      <path class="cls-8" d="M0.0,17.0h25.51v-8.5h-12.76L0.0,17.0Z"/>
+      <path class="cls-1" d="M5.11,17.01L0.0,17.01L0.0,0.0L5.12,0.0L13.62,5.67L25.52,5.67L25.52,11.34L13.62,11.34Z"/>
+      <path class="cls-6" d="M0.0,0.0L12.76,8.5L0.0,17.0Z"/>
+      <path class="cls-2" d="M12.76,8.5L0.0,17.0L0.0,13.6L7.65,8.5L0.0,3.41L0.0,0.01Z"/>
+      <path class="cls-7" d="M3.06,17.01L0.01,17.01L0.0,14.96L9.69,8.5L0.0,2.04L0.0,0.0L3.08,0.0L13.28,6.8L25.52,6.8L25.52,10.2L13.28,10.2Z"/>
     </g>
   </g>
 </svg>
