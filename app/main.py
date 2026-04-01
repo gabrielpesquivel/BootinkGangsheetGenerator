@@ -771,11 +771,18 @@ def render_item(c, x, y, item, draw_cutting_border=True):
         pdf_utils.draw_cutting_rectangle(c, x, y, w, h)
 
     if item['type'] == 'flag':
-        # Get flag dimensions for centering
-        svg_w, svg_h = pdf_utils.get_svg_dimensions(item['flag_path'], item['flag_height_pts'])
-        center_x = x + (w - svg_w) / 2
-        center_y = y + (h - svg_h) / 2
-        pdf_utils.draw_svg(c, item['flag_path'], center_x, center_y, item['flag_height_pts'])
+        # Check if flag SVG needs raster rendering (gradients, embedded images)
+        is_raster = pdf_utils._is_raster_svg(item['flag_path'])
+        if is_raster:
+            svg_w, svg_h = pdf_utils.get_raster_svg_dimensions(item['flag_path'], item['flag_height_pts'])
+            center_x = x + (w - svg_w) / 2
+            center_y = y + (h - svg_h) / 2
+            pdf_utils.draw_raster_svg(c, item['flag_path'], center_x, center_y, item['flag_height_pts'])
+        else:
+            svg_w, svg_h = pdf_utils.get_svg_dimensions(item['flag_path'], item['flag_height_pts'])
+            center_x = x + (w - svg_w) / 2
+            center_y = y + (h - svg_h) / 2
+            pdf_utils.draw_svg(c, item['flag_path'], center_x, center_y, item['flag_height_pts'])
 
     elif item['type'] == 'symbol':
         # Get symbol dimensions for centering
