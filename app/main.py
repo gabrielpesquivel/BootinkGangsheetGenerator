@@ -1,4 +1,5 @@
 import os
+import shutil
 import unicodedata
 import pandas as pd
 from shapely import affinity
@@ -898,6 +899,11 @@ def process_orders():
         # Save PDF
         c.save()
         print(f"  Saved: {output_path}")
+
+        # Save .ai copy (Illustrator opens PDF-based .ai files natively)
+        ai_path = output_path.replace('.pdf', '.ai')
+        shutil.copy2(output_path, ai_path)
+        print(f"  Saved: {ai_path}")
 
 if __name__ == "__main__":    
     if not os.path.exists(config.FONT_PATH):

@@ -17,9 +17,16 @@
       .cls-4 {
         fill: #387f3f;
       }
+
+      .cls-clip {
+        clip-path: url(#clippath);
+      }
     </style>
+    <clipPath id="clippath">
+      <rect x="0" y="0" width="25.51" height="17.01"/>
+    </clipPath>
   </defs>
-  <g id="Layer_1-2" data-name="Layer 1">
+  <g id="Layer_1-2" data-name="Layer 1" class="cls-clip">
     <g>
       <rect class="cls-4" width="25.51" height="17.01"/>
       <rect class="cls-2" y="3.4" width="25.51" height="10.2"/>

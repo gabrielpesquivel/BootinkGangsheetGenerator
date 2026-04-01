@@ -9,9 +9,16 @@
       .cls-2 {
         fill: #ed2224;
       }
+
+      .cls-clip {
+        clip-path: url(#clippath);
+      }
     </style>
+    <clipPath id="clippath">
+      <rect x="0" y="0" width="25.51" height="17.01"/>
+    </clipPath>
   </defs>
-  <g id="Layer_1-2" data-name="Layer 1">
+  <g id="Layer_1-2" data-name="Layer 1" class="cls-clip">
     <g>
       <path class="cls-2" d="M0,0h25.51v17.01H0V0Z"/>
       <path class="cls-1" d="M12.76,3.4l-3,9.23,7.86-5.7H7.9l7.86,5.7-3-9.23Z"/>

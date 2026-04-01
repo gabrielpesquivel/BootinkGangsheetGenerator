@@ -47,14 +47,14 @@ def _get_svg_viewbox(svg_path):
 
 
 def _is_raster_svg(svg_path):
-    """Check if an SVG needs raster rendering (embedded images or gradients)."""
+    """Check if an SVG needs raster rendering (embedded images, gradients, or clip paths)."""
     tree = ET.parse(svg_path)
     root = tree.getroot()
     for elem in root.iter():
         tag = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
         if tag == 'image':
             return True
-        if tag in ('linearGradient', 'radialGradient'):
+        if tag in ('linearGradient', 'radialGradient', 'clipPath'):
             return True
     return False
 

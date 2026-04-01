@@ -13,11 +13,20 @@
       .cls-3 {
         fill: #da1f27;
       }
+
+      .cls-clip {
+        clip-path: url(#clippath);
+      }
     </style>
+    <clipPath id="clippath">
+      <rect x="0" y="0" width="25.51" height="17.01"/>
+    </clipPath>
   </defs>
-  <g id="Layer_1-2" data-name="Layer 1">
-    <path class="cls-1" d="M0,8.5V0h12.76l12.76,8.5v8.5h-12.76L0,8.5Z"/>
-    <path class="cls-3" d="M12.76,0h12.76v8.5h-12.76V0ZM19.13,10.63l1.38,4.25-3.62-2.63h4.47l-3.62,2.63,1.38-4.25Z"/>
-    <path class="cls-2" d="M0,8.5h12.76v8.5H0v-8.5ZM6.38,2.13l1.38,4.25-3.62-2.63h4.47l-3.62,2.63,1.38-4.25Z"/>
+  <g id="Layer_1-2" data-name="Layer 1" class="cls-clip">
+    <path class="cls-1" d="M0,0h25.51v17.01H0V0Z"/>
+    <path class="cls-3" d="M12.76,0h12.76v8.5h-12.76V0Z"/>
+    <path class="cls-2" d="M0,8.5h12.76v8.5H0v-8.5Z"/>
+    <path class="cls-2" d="M6.38,2.13l1.38,4.25-3.62-2.63h4.47l-3.62,2.63,1.38-4.25Z"/>
+    <path class="cls-3" d="M19.13,10.63l1.38,4.25-3.62-2.63h4.47l-3.62,2.63,1.38-4.25Z"/>
   </g>
 </svg>

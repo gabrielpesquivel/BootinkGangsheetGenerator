@@ -3,6 +3,7 @@ Shopify Orders Pipeline - GUI Application
 Drag and drop CSV files to generate gang sheets.
 """
 import os
+import shutil
 import sys
 import threading
 import queue
@@ -320,6 +321,10 @@ class App(TkinterDnDCustomTk):
 
         # Save PDF
         c.save()
+
+        # Save .ai copy (Illustrator opens PDF-based .ai files natively)
+        ai_path = output_path.replace('.pdf', '.ai')
+        shutil.copy2(output_path, ai_path)
 
     def _animate_progress(self):
         """Animate the progress bar slowly while processing."""

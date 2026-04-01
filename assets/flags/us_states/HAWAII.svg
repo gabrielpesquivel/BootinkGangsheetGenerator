@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 34.44 17.75">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0.42 0.74 34.02 17.01">
   <defs>
     <style>
-      .cls-1 {
-        fill: none;
-      }
-
       .cls-2 {
         fill: #c8202f;
       }
@@ -14,40 +10,16 @@
         fill: #222d65;
       }
 
-      .cls-4 {
-        clip-path: url(#clippath-1);
-      }
-
       .cls-5 {
         fill: #fff;
       }
-
-      .cls-6 {
-        clip-path: url(#clippath);
-      }
     </style>
-    <clipPath id="clippath">
-      <rect class="cls-1" x=".42" y=".74" width="17.01" height="9.92"/>
-    </clipPath>
-    <clipPath id="clippath-1">
-      <path class="cls-1" d="M.42.74v4.25h15.59v4.25h-.71L.42.74ZM15.3.74h-7.44v9.21H.42v-.71L15.3.74Z"/>
-    </clipPath>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
       <path class="cls-3" d="M.42.74h34.02v17.01H.42V.74Z"/>
-      <g class="cls-6">
-        <g>
-          <path class="cls-3" d="M.42.74l19.84,11.34M15.3.74L.42,9.24"/>
-          <polygon class="cls-5" points="19.84 12.82 7.86 5.97 .84 9.98 0 8.5 6.15 4.99 0 1.48 .84 0 7.86 4.01 14.88 0 15.73 1.48 9.58 4.99 20.69 11.34 19.84 12.82"/>
-        </g>
-      </g>
-      <g class="cls-4">
-        <g>
-          <path class="cls-3" d="M.42.74l19.84,11.34M15.3.74L.42,9.24"/>
-          <polygon class="cls-2" points="19.98 12.57 7.86 5.64 .7 9.73 .14 8.75 6.72 4.99 .14 1.23 .7 .25 7.86 4.34 15.02 .25 15.58 1.23 9.01 4.99 20.55 11.58 19.98 12.57"/>
-        </g>
-      </g>
+      <path class="cls-5" d="M17.43,10.66L16.06,10.66L7.86,5.97L0.84,9.98L0.42,9.25L0.42,8.27L6.15,4.99L0.42,1.72L0.42,0.74L2.14,0.74L7.86,4.01L13.58,0.74L15.30,0.74L15.72,1.48L9.57,4.99L17.43,9.48Z"/>
+      <path class="cls-2" d="M17.43,10.66L16.63,10.66L7.86,5.65L0.70,9.74L0.42,9.25L0.42,8.59L6.72,4.99L0.42,1.39L0.42,0.74L1.56,0.74L7.86,4.34L14.16,0.74L15.30,0.74L15.58,1.23L9.00,4.99L17.43,9.81Z"/>
       <g>
         <path class="cls-3" d="M7.86.74v9.92M.42,4.99h17.01"/>
         <polygon class="cls-5" points="9.28 10.66 6.45 10.66 6.45 6.41 .42 6.41 .42 3.57 6.45 3.57 6.45 .74 9.28 .74 9.28 3.57 17.43 3.57 17.43 6.41 9.28 6.41 9.28 10.66"/>

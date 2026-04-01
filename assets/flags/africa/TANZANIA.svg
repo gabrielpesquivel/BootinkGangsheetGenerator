@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.25 22.61">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25.51 17.01">
   <defs>
     <style>
       .cls-1 {
@@ -27,17 +27,17 @@
       }
     </style>
     <clipPath id="clippath">
-      <rect class="cls-1" x="1.87" y="2.8" width="25.51" height="17.01"/>
+      <rect class="cls-1" x="0" y="0" width="25.51" height="17.01"/>
     </clipPath>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
-      <path class="cls-3" d="M1.87,19.81V2.8h25.51L1.87,19.81Z"/>
-      <path class="cls-2" d="M27.38,2.8v17.01H1.87L27.38,2.8Z"/>
+      <path class="cls-3" d="M0,17.01V0h25.51L0,17.01Z"/>
+      <path class="cls-2" d="M25.51,0v17.01H0L25.51,0Z"/>
       <g class="cls-6">
         <g>
-          <rect class="cls-4" x="-.71" y="7.94" width="30.66" height="6.73" transform="translate(-3.81 10.01) rotate(-33.69)"/>
-          <rect class="cls-5" x="-.71" y="9" width="30.66" height="4.61" transform="translate(-3.81 10.01) rotate(-33.68)"/>
+          <rect class="cls-4" x="-.71" y="7.94" width="30.66" height="6.73" transform="translate(-5.68 7.21) rotate(-33.69)"/>
+          <rect class="cls-5" x="-.71" y="9" width="30.66" height="4.61" transform="translate(-5.68 7.21) rotate(-33.68)"/>
         </g>
       </g>
     </g>
