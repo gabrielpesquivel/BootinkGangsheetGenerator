@@ -1,7 +1,9 @@
 import base64
 import io
+import os
 import shutil
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 
 from PIL import Image
@@ -14,8 +16,19 @@ from reportlab.graphics import renderPDF
 # Pixels per SVG unit when rasterising gradient SVGs
 _RASTER_SCALE = 8
 
+
+def _find_rsvg_convert():
+    """Locate rsvg-convert, checking the PyInstaller bundle first."""
+    if getattr(sys, 'frozen', False):
+        name = 'rsvg-convert.exe' if sys.platform == 'win32' else 'rsvg-convert'
+        bundled = os.path.join(sys._MEIPASS, name)
+        if os.path.isfile(bundled):
+            return bundled
+    return shutil.which('rsvg-convert')
+
+
 # Locate rsvg-convert once at import time
-_RSVG_CONVERT = shutil.which('rsvg-convert')
+_RSVG_CONVERT = _find_rsvg_convert()
 
 
 def _rasterize_svg(svg_path):

@@ -24,9 +24,21 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Tcl/Tk (macOS)
+      - name: Install Tcl/Tk and librsvg (macOS)
         if: runner.os == 'macOS'
-        run: brew install tcl-tk
+        run: brew install tcl-tk librsvg
+
+      - name: Install librsvg (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: mingw-w64-ucrt-x86_64-librsvg
+
+      - name: Add MSYS2 rsvg-convert to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "D:/msys64/ucrt64/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: pip install -r requirements.txt

@@ -6,6 +6,7 @@ Run from app/ folder: python -m PyInstaller build_exe.spec --noconfirm
 
 import sys
 import os
+import shutil
 from pathlib import Path
 
 # Get tkinterdnd2 path for bundling
@@ -17,6 +18,10 @@ SPEC_DIR = Path(SPECPATH).resolve()
 ROOT_DIR = SPEC_DIR.parent
 
 block_cipher = None
+
+# Locate rsvg-convert so PyInstaller bundles it (and its shared libs)
+_rsvg_bin = shutil.which('rsvg-convert')
+_rsvg_binaries = [(_rsvg_bin, '.')] if _rsvg_bin else []
 
 # Platform detection
 is_macos = sys.platform == 'darwin'
@@ -37,7 +42,7 @@ excluded_modules = [
 a = Analysis(
     ['gui.py'],
     pathex=[str(SPEC_DIR)],
-    binaries=[],
+    binaries=_rsvg_binaries,
     datas=[
         # Include assets folder from root
         (str(ROOT_DIR / 'assets'), 'assets'),
