@@ -62,7 +62,7 @@ python -m PyInstaller build_exe.spec --noconfirm --distpath ../dist
 4. Click "Open Output Folder" to view PDFs
 
 ### Command Line
-
+ 
 ```bash
 # Place order CSVs in input_csv/orders/
 # Place custom value CSVs in input_csv/custom/
