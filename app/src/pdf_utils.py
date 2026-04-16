@@ -14,7 +14,7 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
 
 # Pixels per SVG unit when rasterising gradient SVGs
-_RASTER_SCALE = 8
+_RASTER_SCALE = 20
 
 
 def _find_rsvg_convert():
