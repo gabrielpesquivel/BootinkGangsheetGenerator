@@ -7,6 +7,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import CMYKColor
 from reportlab.lib.utils import ImageReader
