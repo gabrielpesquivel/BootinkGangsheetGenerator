@@ -104,9 +104,18 @@ def _extract_raster_from_svg(svg_path):
                 img = Image.open(io.BytesIO(img_data))
                 return img, vb_width, vb_height
 
-    # Fallback: rasterize the full SVG via cairosvg (handles gradients)
+    # Fallback: rasterize the full SVG via rsvg-convert (handles gradients)
     img = _rasterize_svg(svg_path)
     if img:
+        img = img.convert('RGBA')
+        bbox = img.getbbox()
+        if bbox:
+            # Crop transparent padding and adjust viewBox proportionally
+            crop_left, crop_top, crop_right, crop_bottom = bbox
+            orig_w, orig_h = img.size
+            vb_width = vb_width * (crop_right - crop_left) / orig_w
+            vb_height = vb_height * (crop_bottom - crop_top) / orig_h
+            img = img.crop(bbox)
         return img, vb_width, vb_height
 
     return None, 0, 0
